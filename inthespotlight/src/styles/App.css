@@ -1,3 +1,22 @@
 .App {
   text-align: center;
 }
+
+
+/**********Styles**********************/
+#style-image {
+  background-size: cover;
+  background-image: url("../images/people.jpg");
+  height: 45vh;
+}
+
+#overlay {
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 55vh;
+  z-index: 0;
+}
+/******************************************/

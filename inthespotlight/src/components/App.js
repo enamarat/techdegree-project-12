@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-
-
 import LandingPage from './LandingPage.js'
 import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
-import '../styles/App.css';
+
 
 class App extends Component {
   state = { users: []}
