@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody  } from 'reactstrap';
-
+//import {Redirect} from 'react-router-dom';
 
 class ModalWindow extends React.Component {
   constructor(props) {
@@ -20,6 +20,7 @@ class ModalWindow extends React.Component {
       submitted: false
     }));
 
+    /************Remove keys from state after closing modal window****/
     if (this.state.email) {
       this.setState({
         email: undefined
@@ -43,21 +44,22 @@ class ModalWindow extends React.Component {
         wrongEmailFormat: undefined
       });
     }
-
   }
+
 
   handleChange(event) {
     const name = event.target.name;
 
     this.setState({
-      [name]: event.target.value
+      [name]: event.target.value,
+      wrongEmailFormat: false
     });
 
   }
 
   /*A function which checks format of email*/
   validateEmail(emailAddress) {
-    const mailFormat = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
+    const mailFormat = /^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
     return mailFormat.test(emailAddress);
   }
 
@@ -67,7 +69,25 @@ class ModalWindow extends React.Component {
       submitted: true
     });
 
-    /* If typed email is in wrong format form is prevented from submission */
+    /******************** Prevent form submission if: *****************************/
+    /* email input field is empty */
+    if ((!this.state.email) || (this.state.email && this.state.email.length === 0)) {
+      event.preventDefault();
+    }
+
+    /* password input field is empty */
+    if ((!this.state.password) || (this.state.password && this.state.password.length === 0)) {
+      event.preventDefault();
+    }
+
+    /* confirmPassword input field is empty */
+    if (this.props.signUp === "true") {
+      if ((!this.state.passwordConfirm) || (this.state.passwordConfirm && this.state.passwordConfirm.length === 0)) {
+        event.preventDefault();
+      }
+    }
+
+    /* typed email is in wrong format */
     if(this.state.email) {
         this.validateEmail(this.state.email);
 
@@ -78,15 +98,15 @@ class ModalWindow extends React.Component {
           event.preventDefault();
         }
     }
-
-    event.preventDefault();
   }
 
+
+//()=> <Redirect to="/register"/>
 
   render() {
     return (
       <div>
-        <Button color={this.props.buttonColor} onClick={this.toggle}>{this.props.buttonLabel}</Button>
+        <Button color={this.props.buttonColor} onClick={this.toggle }>{this.props.buttonLabel}</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.props.buttonLabel}</ModalHeader>
           <ModalBody>

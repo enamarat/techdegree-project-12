@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import LandingPage from './LandingPage.js'
-import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 
 class App extends Component {

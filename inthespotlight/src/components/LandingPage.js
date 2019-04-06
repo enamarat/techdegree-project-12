@@ -4,10 +4,6 @@ import Photo from '../images/conversation.jpg'
 import ModalWindow from './ModalWindow.js'
 
 
-
-
-
-
 class LandingPage extends Component {
 
   render() {
