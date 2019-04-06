@@ -6,8 +6,7 @@ class ModalWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false,
-      submitted: false
+      modal: false
     };
 
     this.toggle = this.toggle.bind(this);
@@ -33,6 +32,18 @@ class ModalWindow extends React.Component {
       });
     }
 
+    if (this.state.passwordConfirm) {
+      this.setState({
+        passwordConfirm: undefined
+      });
+    }
+
+    if (this.state.wrongEmailFormat) {
+      this.setState({
+        wrongEmailFormat: undefined
+      });
+    }
+
   }
 
   handleChange(event) {
@@ -44,10 +55,30 @@ class ModalWindow extends React.Component {
 
   }
 
+  /*A function which checks format of email*/
+  validateEmail(emailAddress) {
+    const mailFormat = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
+    return mailFormat.test(emailAddress);
+  }
+
+
   handleSubmit(event) {
     this.setState({
       submitted: true
     });
+
+    /* If typed email is in wrong format form is prevented from submission */
+    if(this.state.email) {
+        this.validateEmail(this.state.email);
+
+        if(!this.validateEmail(this.state.email)) {
+          this.setState({
+            wrongEmailFormat: true
+          });
+          event.preventDefault();
+        }
+    }
+
     event.preventDefault();
   }
 
@@ -75,18 +106,49 @@ class ModalWindow extends React.Component {
                     !this.state.email && this.state.submitted === true ?
                      <small id="emailWarning" className="form-text text-danger">Please enter email</small> : null
                   }
+                  {/* If typed email is in wrong format, show warning */}
+                  {
+                    this.state.wrongEmailFormat && this.state.submitted === true ?
+                     <small id="emailWarning" className="form-text text-danger">Incorrect format of email</small> : null
+                  }
               </div>
 
               <div className="form-group">
-                <label htmlFor="exampleInputPassword1">Password</label>
-                <input name="password" type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" onChange={this.handleChange}/>
+                <label htmlFor="exampleInputPassword">Password</label>
+                <input name="password" type="password" className="form-control" id="exampleInputPassword" placeholder="Password" onChange={this.handleChange}/>
 
                 {/*If password input field is empty, show warning */}
                 {
                   !this.state.password && this.state.submitted === true ?
                    <small id="passwordWarning" className="form-text text-danger">Please enter password</small> : null
                 }
+
+                {/*If password length is less than 6 symbols, show warning */}
+                {
+                  this.state.password && this.state.password.length < 6 && this.state.submitted === true ?
+                   <small id="passwordLengthWarning" className="form-text text-danger">Password must be at least 6 symbols long</small> : null
+                }
               </div>
+
+              {/*If a button "Sign Up" is clicked, additional input field for confirming password appears */}
+              {
+               this.props.signUp==="true" &&
+               <div className="form-group">
+                 <label htmlFor="exampleConfirmPassword">Confirm password</label>
+                 <input name="passwordConfirm" type="password" className="form-control" id="exampleConfirmPassword" placeholder="Confirm password" onChange={this.handleChange}/>
+                 {/*If "Confirm password" input field is empty, show warning */}
+                 {
+                   !this.state.passwordConfirm && this.state.submitted === true ?
+                    <small id="passwordWarning" className="form-text text-danger">Please enter password</small> : null
+                 }
+
+                 {/*If password in "Confirm password" field doesn't match the password, show warning */}
+                 {
+                   this.state.password && this.state.passwordConfirm && this.state.submitted === true && this.state.password !== this.state.passwordConfirm ?
+                    <small id="passwordMatchWarning" className="form-text text-danger">Entered passwords don't match</small> : null
+                 }
+                </div>
+              }
 
               <button type="submit" className="btn btn-danger" onClick={this.handleSubmit}>Submit</button>
             </form>
