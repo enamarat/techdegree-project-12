@@ -6,6 +6,7 @@ import ModalWindow from './ModalWindow.js'
 
 class LandingPage extends Component {
 
+
   render() {
     return(
       <div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody  } from 'reactstrap';
 //import {Redirect} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 class ModalWindow extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class ModalWindow extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.validateEmail = this.validateEmail.bind(this);
   }
 
   toggle() {
@@ -44,6 +46,32 @@ class ModalWindow extends React.Component {
         wrongEmailFormat: undefined
       });
     }
+
+    /*******************************/
+
+
+    if (this.props.signUp === "true") {
+      if(this.state.modal===false) {
+        let path = `/register`
+        this.props.history.push(path);
+      }
+
+      if(this.state.modal===true) {
+        let path = `/`
+        this.props.history.push(path);
+      }
+    } else if (this.props.signUp === "false") {
+      if(this.state.modal===false) {
+        let path = `/login`
+        this.props.history.push(path);
+      }
+
+      if(this.state.modal===true) {
+        let path = `/`
+        this.props.history.push(path);
+      }
+    }
+
   }
 
 
@@ -98,10 +126,11 @@ class ModalWindow extends React.Component {
           event.preventDefault();
         }
     }
+
+    // /* Redirect to /profile route */
+    // let path = `/profile`
+    // this.props.history.push(path);
   }
-
-
-//()=> <Redirect to="/register"/>
 
   render() {
     return (
@@ -194,4 +223,4 @@ class ModalWindow extends React.Component {
 //   email.setAttribute("class", "warning-field");
 // }
 
-export default ModalWindow;
+export default withRouter(ModalWindow);

@@ -4,7 +4,9 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 
 class App extends Component {
-  state = { users: []}
+  state = {
+    users: []
+  }
 
   componentDidMount() {
     // fetch('/users').
@@ -13,12 +15,22 @@ class App extends Component {
   }
 
 
+        // activateRegistration = () => {
+        //   this.setState(prevState=>({
+        //     registration: true
+        //   }));
+        // }
+
   render() {
     return (
       <BrowserRouter>
       <div className="App">
         <Switch>
-          <Route exact path="/" component={LandingPage} />
+        {/*  <Route exact path="/" component={LandingPage} /> */}
+          <Route exact path="/" component={LandingPage}/>
+          <Route path="/register" component={LandingPage}/>
+          <Route path="/login" component={LandingPage}/>
+          <Route path="/profile" />
         </Switch>
       </div>
       </BrowserRouter>
