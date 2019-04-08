@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import Photo from '../images/conversation.jpg'
 import ModalWindow from './ModalWindow.js'
 
@@ -17,10 +16,10 @@ class LandingPage extends Component {
           {/* Modal windows*/}
           <div className="d-flex justify-content-center">
             <div className="mr-2">
-            <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true"/>
+            <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" handleData={this.props.handleSentData} inputChange={this.props.inputChange}/>
             </div>
             <div>
-            <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false"/>
+        {/*    <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false"/> */}
             </div>
           </div>
 

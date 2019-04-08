@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody  } from 'reactstrap';
 //import {Redirect} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 
 class ModalWindow extends React.Component {
   constructor(props) {
@@ -22,7 +23,7 @@ class ModalWindow extends React.Component {
       submitted: false
     }));
 
-    /************Remove keys from state after closing modal window****/
+    /************Empty form input fileds after closing a modal window****/
     if (this.state.email) {
       this.setState({
         email: undefined
@@ -47,89 +48,106 @@ class ModalWindow extends React.Component {
       });
     }
 
-    /*******************************/
-
-
+    /******Redirect to another route after opening a modal window******/
     if (this.props.signUp === "true") {
       if(this.state.modal===false) {
-        let path = `/register`
+        let path = `/register`;
         this.props.history.push(path);
       }
 
       if(this.state.modal===true) {
-        let path = `/`
+        let path = `/`;
         this.props.history.push(path);
       }
     } else if (this.props.signUp === "false") {
       if(this.state.modal===false) {
-        let path = `/login`
+        let path = `/login`;
         this.props.history.push(path);
       }
 
       if(this.state.modal===true) {
-        let path = `/`
+        let path = `/`;
         this.props.history.push(path);
       }
     }
 
-  }
+  } //toggle
 
 
+  /* Get name attribute from input fiedls and paste in into state with
+  its corresponding value */
   handleChange(event) {
     const name = event.target.name;
 
     this.setState({
-      [name]: event.target.value,
-      wrongEmailFormat: false
+        [name]: event.target.value,
+        //wrongEmailFormat: false
     });
 
   }
 
-  /*A function which checks format of email*/
+  /* A function which checks format of email */
   validateEmail(emailAddress) {
     const mailFormat = /^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
     return mailFormat.test(emailAddress);
   }
 
-
+  /* If data for all form fields is provided in correct format,
+  submit data to backend server */
   handleSubmit(event) {
     this.setState({
       submitted: true
     });
 
-    /******************** Prevent form submission if: *****************************/
-    /* email input field is empty */
-    if ((!this.state.email) || (this.state.email && this.state.email.length === 0)) {
-      event.preventDefault();
-    }
+    event.preventDefault();
 
-    /* password input field is empty */
-    if ((!this.state.password) || (this.state.password && this.state.password.length === 0)) {
-      event.preventDefault();
-    }
-
-    /* confirmPassword input field is empty */
-    if (this.props.signUp === "true") {
-      if ((!this.state.passwordConfirm) || (this.state.passwordConfirm && this.state.passwordConfirm.length === 0)) {
-        event.preventDefault();
-      }
-    }
-
-    /* typed email is in wrong format */
+    /* Prevent data submission if entered email is in wrong format */
     if(this.state.email) {
         this.validateEmail(this.state.email);
+        console.log(this.validateEmail(this.state.email));
 
         if(!this.validateEmail(this.state.email)) {
           this.setState({
             wrongEmailFormat: true
           });
-          event.preventDefault();
+        } else {
+          this.setState({
+            wrongEmailFormat: false
+          });
         }
     }
 
-    // /* Redirect to /profile route */
-    // let path = `/profile`
-    // this.props.history.push(path);
+
+    /**********Registering a new user******/
+   if (this.props.signUp === "true") {
+     if (this.state.email && this.state.password && this.state.passwordConfirm && this.state.email.length > 0
+     && this.state.password.length >= 6 && this.state.password === this.state.passwordConfirm
+     && this.state.passwordConfirm.length > 0 && this.state.wrongEmailFormat === false) {
+
+       const userInfo = {
+         email: this.state.email,
+         password: this.state.password
+       };
+
+       /* Send form data to Express */
+       axios
+        .post('/register', userInfo)
+        .then(() => console.log('User is created'))
+        .catch(err => {
+          console.error(err);
+        });
+
+        this.props.history.push(`/profile`);
+      }
+    ///  this.props.inputChange(userInfo);
+    ///  this.props.handleData();
+    }
+
+    /**********When a user logs in******/
+    // if (this.props.signUp === "false") {
+    //  event.preventDefault();
+    //
+    // }
   }
 
   render() {
@@ -142,7 +160,7 @@ class ModalWindow extends React.Component {
             <form>
               <div className="form-group">
                 <label htmlFor="exampleInputEmail1">Email address</label>
-                <input name="email" type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" onChange={this.handleChange}/>
+                <input name="email" type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"  onChange={this.handleChange} />
 
                  {/*If a button "Sign Up" is clicked, additional message appears under the input field*/}
                  {
