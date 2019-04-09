@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const createError = require('http-errors');
+const session = require('express-session');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,25 +32,14 @@ db.once('open', () => {
   console.log("database connection is successful!");
 });
 
-/*************** Middleware functions **************/
-function authenticateUser(req, res, next) {
-    const credentials = auth(req);
-    if (credentials) {
-        User.authenticate(credentials.name, credentials.pass, function(err, user) {
-            if(err) {
-              return next(err);
-            } else {
-              //console.log(credentials);
-              req.currentUser = user;
-              next();
-            }
-        });
-    } else {
-        const err = new Error('Email or password are not provided!');
-        err.status = 401;
-        return next(err);
-    }
-}
+//session
+app.use(session({
+  secret: 'I love you',
+  resave: true,
+  saveUninitialized: false
+}));
+
+
 
 /***********************/
 //use cors to allow cross origin resource sharing
@@ -64,8 +54,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // view engine setup
-///app.set('views', path.join(__dirname, 'views'));
-///app.set('view engine', 'pug');
+//app.set('views', path.join(__dirname, 'views'));
+//app.set('view engine', 'pug');
 
 app.use(morgan('dev'));
 ///app.use(express.json());
@@ -94,7 +84,8 @@ app.post('/register', function(req, res, next) {
       return next(err);
     } else {
       res.status(201);
-      res.redirect('/profile');
+    //  res.redirect('/profile');
+      res.send();
       }
   });
   } else {
@@ -103,6 +94,34 @@ app.post('/register', function(req, res, next) {
     return next(err);
   }
 
+});
+
+
+app.post('/login', function(req, res, next) {
+  if (req.body.email && req.body.password) {
+    console.log(req.body.email);
+    console.log(req.body.password);
+    User.authenticate(req.body.email, req.body.password,
+    function(error, user) {
+      if (error || !user) {
+        console.log('Failure!');
+        const err = new Error('Wrong email or password.');
+        err.status = 401;
+        res.send();
+        return next (err);
+      } else {
+        req.session.userId = user._id;
+        console.log('success!');
+        res.send();
+        //return res.redirect('/profile');
+      }
+    });
+
+    // const userData = {
+    //   email: req.body.email,
+    //   password: req.body.password
+    // };
+  }
 });
 
 // app.post('/register', (req, res) => {
@@ -116,8 +135,8 @@ app.post('/register', function(req, res, next) {
 //   res.send({ express: 'Welcome!' });
 // });
 
-app.get('/profile', authenticateUser, (req, res, next) => {
-   res.json(req.currentUser);
+app.get('/profile', (req, res, next) => {
+
 });
 
 

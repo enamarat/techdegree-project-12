@@ -33,7 +33,7 @@ userSchema.pre('save', function(next) {
 /* compare provided email and password with database and authenticate user
 if there is a match */
 userSchema.statics.authenticate = function(email, password, callback) {
-  this.findOne({emailAddress: email}).exec(function(err, user){
+  this.findOne({email: email}).exec(function(err, user){
     if(err) {
       return callback(err);
     } else if (!user) {

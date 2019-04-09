@@ -79,8 +79,7 @@ class ModalWindow extends React.Component {
     const name = event.target.name;
 
     this.setState({
-        [name]: event.target.value,
-        //wrongEmailFormat: false
+        [name]: event.target.value
     });
 
   }
@@ -140,13 +139,24 @@ class ModalWindow extends React.Component {
         this.props.history.push(`/profile`);
 
       }
-    }
+      /**********When a user logs in******/
+    } else if (this.props.signUp === "false") {
+       if (this.state.email && this.state.password) {
+         const userInfo = {
+           email: this.state.email,
+           password: this.state.password
+         };
 
-    /**********When a user logs in******/
-    // if (this.props.signUp === "false") {
-    //  event.preventDefault();
-    //
-    // }
+         /* Send form data to Express server */
+         axios
+          .post('/login', userInfo)
+          .then(() => console.log('User info is sent'))
+          .catch(err => {
+            console.error(err);
+          });
+     }
+
+    }
   }
 
   openModalWindow() {
