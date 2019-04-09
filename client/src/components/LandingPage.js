@@ -5,7 +5,6 @@ import ModalWindow from './ModalWindow.js'
 
 class LandingPage extends Component {
 
-
   render() {
     return(
       <div>
@@ -16,10 +15,10 @@ class LandingPage extends Component {
           {/* Modal windows*/}
           <div className="d-flex justify-content-center">
             <div className="mr-2">
-            <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" handleData={this.props.handleSentData} inputChange={this.props.inputChange}/>
+            {this.props.register ? <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" register="true" /> : <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" />}
             </div>
             <div>
-        {/*    <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false"/> */}
+              {this.props.login ? <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" login="true" /> : <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" />}
             </div>
           </div>
 

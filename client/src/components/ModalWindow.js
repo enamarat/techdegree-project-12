@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody  } from 'reactstrap';
-//import {Redirect} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 
@@ -92,44 +91,45 @@ class ModalWindow extends React.Component {
     return mailFormat.test(emailAddress);
   }
 
-  /* If data for all form fields is provided in correct format,
+
+  /* If data for all form fields are provided in correct format,
   submit data to backend server */
   handleSubmit(event) {
+    event.preventDefault();
+
     this.setState({
       submitted: true
     });
 
-    event.preventDefault();
-
     /* Prevent data submission if entered email is in wrong format */
-    if(this.state.email) {
-        this.validateEmail(this.state.email);
-        console.log(this.validateEmail(this.state.email));
+    let emailCheck = null;
 
-        if(!this.validateEmail(this.state.email)) {
-          this.setState({
-            wrongEmailFormat: true
-          });
-        } else {
-          this.setState({
-            wrongEmailFormat: false
-          });
-        }
+    if (this.state.email) {
+        emailCheck = this.validateEmail(this.state.email);
+
+      if (emailCheck === false) {
+        this.setState({
+          wrongEmailFormat: true
+        });
+      } else if (emailCheck === true) {
+        this.setState({
+          wrongEmailFormat: false
+        });
+      }
     }
-
 
     /**********Registering a new user******/
    if (this.props.signUp === "true") {
      if (this.state.email && this.state.password && this.state.passwordConfirm && this.state.email.length > 0
      && this.state.password.length >= 6 && this.state.password === this.state.passwordConfirm
-     && this.state.passwordConfirm.length > 0 && this.state.wrongEmailFormat === false) {
+     && this.state.passwordConfirm.length > 0 && emailCheck === true) {
 
        const userInfo = {
          email: this.state.email,
          password: this.state.password
        };
 
-       /* Send form data to Express */
+       /* Send form data to Express server */
        axios
         .post('/register', userInfo)
         .then(() => console.log('User is created'))
@@ -138,9 +138,8 @@ class ModalWindow extends React.Component {
         });
 
         this.props.history.push(`/profile`);
+
       }
-    ///  this.props.inputChange(userInfo);
-    ///  this.props.handleData();
     }
 
     /**********When a user logs in******/
@@ -149,6 +148,27 @@ class ModalWindow extends React.Component {
     //
     // }
   }
+
+  openModalWindow() {
+    this.setState({
+      modal: true
+    });
+  }
+
+
+  componentDidMount() {
+    if(this.props.register) {
+      this.openModalWindow();
+    }
+
+    if(this.props.login) {
+      this.openModalWindow();
+    }
+  }
+
+
+
+
 
   render() {
     return (

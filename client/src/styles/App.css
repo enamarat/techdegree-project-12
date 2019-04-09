@@ -20,7 +20,7 @@
   z-index: 0;
 }
 /******************************************/
-.returned {
-  border: 2px solid green;
+#not-found {
+  border: 2px solid rgba(255, 0, 0, 1);
 
 }

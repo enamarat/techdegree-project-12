@@ -78,11 +78,6 @@ app.use(morgan('dev'));
 
 
 /*********Routes******************/
-app.get('/api/hello', function(req, res) {
-  res.send({ express: 'Hello From Express' });
-});
-
-
 app.post('/register', function(req, res, next) {
   if (req.body.email && req.body.password) {
     const userData = {
@@ -110,11 +105,6 @@ app.post('/register', function(req, res, next) {
 
 });
 
-
-app.get('/profile', function(req, res) {
-  res.send({ express: 'Welcome!' });
-});
-
 // app.post('/register', (req, res) => {
 //   console.log(req.body);
 //   res.send(
@@ -122,6 +112,13 @@ app.get('/profile', function(req, res) {
 //   );
 // });
 
+// app.get('/profile', function(req, res) {
+//   res.send({ express: 'Welcome!' });
+// });
+
+app.get('/profile', authenticateUser, (req, res, next) => {
+   res.json(req.currentUser);
+});
 
 
 
@@ -139,7 +136,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error.pug');
+  //res.render('error.pug');
 });
 
 

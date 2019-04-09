@@ -1,14 +1,59 @@
 import React, { Component } from 'react';
-import LandingPage from './LandingPage.js'
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import LandingPage from './LandingPage.js';
+import Profile from './Profile.js';
+import NotFound from './NotFound.js';
+import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom';
+
+
+const fakeAuth = {
+  isAuthenticated: false,
+  authenticate(cb) {
+    this.isAuthenticated = true;
+    setTimeout(cb, 100); // fake async
+  },
+  signout(cb) {
+    this.isAuthenticated = false;
+    setTimeout(cb, 100);
+  }
+};
+
+function PrivateRoute({ component: Component, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        fakeAuth.isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: props.location }
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
 
 
 class App extends Component {
-  state = {
-    response: '',
-    post: '',
-    responseToPost: '',
-  };
+  constructor(props) {
+    super(props);
+    this.landingElement = React.createRef();
+
+    this.state = {
+      response: '',
+      post: '',
+      responseToPost: '',
+      isAuthenticated: false
+    };
+  }
+
+
+
   // componentDidMount() {
   //   this.callApi()
   //     .then(res => this.setState({ response: res.express }))
@@ -56,6 +101,8 @@ class App extends Component {
   // };
 
 
+
+
   render() {
     return (
       //<div className="App">
@@ -77,10 +124,11 @@ class App extends Component {
       <BrowserRouter>
       <div className="App">
         <Switch>
-          <Route exact path="/"  render={() => <LandingPage />} />
-          <Route path="/register" render={() => <LandingPage inputChange={this.handleInputChange} handleSentData={this.handleSubmit}/>} />
-        {/*  <Route path="/login" component={LandingPage}/> */}
-          <Route path="/profile" />
+          <Route exact path="/" component={LandingPage} />
+          <Route path="/register" render={()=> <LandingPage register="true"/>} />
+          <Route path="/login" render={()=> <LandingPage login="true"/>} />
+          <Route path="/profile" component={Profile} />
+          <Route component={NotFound}/>
         </Switch>
     {/*     <p className="returned">{this.state.responseToPost}</p> */}
       </div>
