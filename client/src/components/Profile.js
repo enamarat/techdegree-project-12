@@ -2,32 +2,12 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 //import {withRouter, Redirect} from 'react-router-dom';
-//import fakeAuth from './App.js'
-
-// const AuthButton = withRouter(
-//   ({ history }) =>
-//     fakeAuth.isAuthenticated ? (
-//       <p>
-//         Welcome!{" "}
-//         <button
-//           onClick={() => {
-//             fakeAuth.signout(() => history.push("/"));
-//           }}
-//         >
-//           Sign out
-//         </button>
-//       </p>
-//     ) : (
-//       null
-//     )
-// );
 
 
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-    //redirectToReferrer: false
     };
 
     this.getData = this.getData.bind(this);
@@ -52,37 +32,15 @@ leaveProfilePage = () => {
   this.props.logout();
   this.props.history.push(`/`);
 }
-//class Login extends Component {
-  //state = { redirectToReferrer: false };
-  //
-  // login = () => {
-  //   fakeAuth.authenticate(() => {
-  //     this.setState({ redirectToReferrer: true });
-  //   });
-  // };
-  //
-  // render() {
-  //   let { from } = this.props.location.state || { from: { pathname: "/" } };
-  //   let { redirectToReferrer } = this.state;
-  //
-  //   if (redirectToReferrer) return <Redirect to={from} />;
-  //
-  //   return (
-  //     <div>
-  //     <AuthButton />
-  //       <p>You must log in to view the page at {from.pathname}</p>
-  //       <button onClick={this.login}>Log in</button>
-  //     </div>
-  //   );
-  // }
-//}
+
 
   render() {
     return(
       <div>
-      <button onClick={this.leaveProfilePage}> Log out </button>
+      
         <div className="d-flex justify-content-center">
           <h2> Trending hashtags on Twitter </h2>
+          <button className="btn btn-info" onClick={this.leaveProfilePage}> Log out </button>
         </div>
       </div>
     );

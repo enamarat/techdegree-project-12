@@ -141,15 +141,26 @@ class ModalWindow extends React.Component {
        };
 
        /* Send form data to Express server */
-       axios
+       return axios
         .post('/register', userInfo)
-        .then(() => console.log('User is created'))
+        .then((res) => {
+          //console.log(res);
+          if (res.status === 201 && res.data.status !== 400) {
+            this.props.authenticate();
+            this.props.history.push(`/profile`);
+          }
+          if (res.data.status === 400) {
+            //console.log(res.data);
+             this.setState({
+               emailExists: true
+             });
+         }
+        })
         .catch(err => {
           console.error(err);
         });
 
-        this.props.authenticate();
-        this.props.history.push(`/profile`);
+
 
       }
       /**********When a user logs in******/
@@ -214,6 +225,8 @@ class ModalWindow extends React.Component {
               <div className="form-group">
                 {/* If /login post request returned error 401, show warning*/}
                 {this.state.accessDenied ? <small id="access" className="form-text text-danger"> Wrong email or password </small> : null }
+                {/* If /login post request returned error 401, show warning*/}
+                {this.state.emailExists ? <small id="uniqueEmail" className="form-text text-danger"> User with such email already exists! </small> : null }
                 <label htmlFor="exampleInputEmail1">Email address</label>
                 <input name="email" type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"  onChange={this.handleChange} />
 

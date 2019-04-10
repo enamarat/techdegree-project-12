@@ -76,12 +76,12 @@ app.post('/register', function(req, res, next) {
       password: req.body.password
     };
 
-
   // if email of a newly created users mathces email of a existing user, throw an error
   User.create(userData, (err, user) => {
     if(err) {
-      err.message = 'The entered email already exists!';
+      const err = new Error('The entered email already exists!');
       err.status = 400;
+      res.send(err);
       return next(err);
     } else {
       res.status(201);
@@ -91,7 +91,7 @@ app.post('/register', function(req, res, next) {
   } else {
     const err = new Error('All fields required!');
     err.status = 400;
-    res.send();
+    res.send(err);
     return next(err);
   }
 

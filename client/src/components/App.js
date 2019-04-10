@@ -56,7 +56,6 @@ class App extends Component {
     };
   }
 
-
     authenticate = () => {
       this.setState({
         isAuthenticated: true
@@ -147,6 +146,5 @@ class App extends Component {
     );
   }
 }
-
 
 export default App;
