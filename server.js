@@ -91,6 +91,7 @@ app.post('/register', function(req, res, next) {
   } else {
     const err = new Error('All fields required!');
     err.status = 400;
+    res.send();
     return next(err);
   }
 
@@ -107,7 +108,7 @@ app.post('/login', function(req, res, next) {
         console.log('Failure!');
         const err = new Error('Wrong email or password.');
         err.status = 401;
-        res.send();
+        res.send(err);
         return next (err);
       } else {
         console.log('success!');

@@ -7,7 +7,8 @@ class ModalWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false
+      modal: false,
+      accessDenied: false
     };
 
     this.toggle = this.toggle.bind(this);
@@ -18,8 +19,7 @@ class ModalWindow extends React.Component {
 
   toggle() {
     this.setState(prevState => ({
-      modal: !prevState.modal,
-      submitted: false
+      modal: !prevState.modal
     }));
 
     /************Empty form input fileds after closing a modal window****/
@@ -44,6 +44,18 @@ class ModalWindow extends React.Component {
     if (this.state.wrongEmailFormat) {
       this.setState({
         wrongEmailFormat: undefined
+      });
+    }
+
+    if (this.state.accessDenied) {
+      this.setState({
+        accessDenied: undefined
+      });
+    }
+
+    if (this.state.submitted) {
+      this.setState({
+        submitted: undefined
       });
     }
 
@@ -152,10 +164,16 @@ class ModalWindow extends React.Component {
         return axios
           .post('/login', userInfo)
           .then((res) => {
-            console.log(res);
-            if (res.status === 200) {
+            //console.log(res);
+            if (res.status === 200 && res.data.status !== 401) {
               this.props.authenticate();
               this.props.history.push(`/profile`);
+            }
+             if (res.data.status === 401) {
+               //console.log(res.data);
+                this.setState({
+                  accessDenied: true
+                });
             }
           })
           .catch(err => {
@@ -184,18 +202,18 @@ class ModalWindow extends React.Component {
   }
 
 
-
-
-
   render() {
     return (
       <div>
-        <Button color={this.props.buttonColor} onClick={this.toggle }>{this.props.buttonLabel}</Button>
+        <Button color={this.props.buttonColor} onClick={this.toggle}>{this.props.buttonLabel}</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.props.buttonLabel}</ModalHeader>
+
           <ModalBody>
             <form>
               <div className="form-group">
+                {/* If /login post request returned error 401, show warning*/}
+                {this.state.accessDenied ? <small id="access" className="form-text text-danger"> Wrong email or password </small> : null }
                 <label htmlFor="exampleInputEmail1">Email address</label>
                 <input name="email" type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"  onChange={this.handleChange} />
 

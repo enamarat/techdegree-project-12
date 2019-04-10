@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 //import {withRouter, Redirect} from 'react-router-dom';
 //import fakeAuth from './App.js'
 
@@ -46,6 +47,11 @@ componentDidMount() {
   this.getData();
 }
 
+
+leaveProfilePage = () => {
+  this.props.logout();
+  this.props.history.push(`/`);
+}
 //class Login extends Component {
   //state = { redirectToReferrer: false };
   //
@@ -74,8 +80,8 @@ componentDidMount() {
   render() {
     return(
       <div>
+      <button onClick={this.leaveProfilePage}> Log out </button>
         <div className="d-flex justify-content-center">
-        
           <h2> Trending hashtags on Twitter </h2>
         </div>
       </div>
@@ -84,4 +90,4 @@ componentDidMount() {
 }
 
 
-export default Profile;
+export default withRouter(Profile);

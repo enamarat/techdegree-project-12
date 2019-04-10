@@ -63,6 +63,12 @@ class App extends Component {
       });
     }
 
+    logOut = () => {
+      this.setState({
+        isAuthenticated: false
+      });
+    }
+
 
 
   // componentDidMount() {
@@ -133,7 +139,7 @@ class App extends Component {
           <Route exact path="/" component={LandingPage} />
           <Route path="/register" render={()=> <LandingPage register="true" authenticate={this.authenticate}/>} />
           <Route path="/login" render={()=> <LandingPage login="true" authenticate={this.authenticate}/>} />
-          {this.state.isAuthenticated === true ? <Route path="/profile" component={Profile} /> : <Redirect to="/login"/>}
+          {this.state.isAuthenticated === true ? <Route path="/profile" render={()=><Profile logout={this.logOut}/>} /> : <Redirect to="/login"/>}
           <Route component={NotFound}/>
         </Switch>
       </div>
