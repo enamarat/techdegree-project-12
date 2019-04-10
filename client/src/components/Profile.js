@@ -71,16 +71,16 @@ componentDidMount() {
   // }
 //}
 
-  // render() {
-  //   return(
-  //     <div>
-  //       <div className="d-flex justify-content-center">
-  //       <AuthButton />
-  //         <h2> Trending hashtags on Twitter </h2>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  render() {
+    return(
+      <div>
+        <div className="d-flex justify-content-center">
+        
+          <h2> Trending hashtags on Twitter </h2>
+        </div>
+      </div>
+    );
+  }
 }
 
 

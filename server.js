@@ -50,8 +50,9 @@ app.use(
   })
 );
 
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 
 // view engine setup
 //app.set('views', path.join(__dirname, 'views'));
@@ -84,7 +85,6 @@ app.post('/register', function(req, res, next) {
       return next(err);
     } else {
       res.status(201);
-    //  res.redirect('/profile');
       res.send();
       }
   });
@@ -110,17 +110,11 @@ app.post('/login', function(req, res, next) {
         res.send();
         return next (err);
       } else {
-        req.session.userId = user._id;
         console.log('success!');
+        req.session.userId = user._id;
         res.send();
-        //return res.redirect('/profile');
       }
     });
-
-    // const userData = {
-    //   email: req.body.email,
-    //   password: req.body.password
-    // };
   }
 });
 

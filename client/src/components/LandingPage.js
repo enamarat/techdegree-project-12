@@ -14,11 +14,15 @@ class LandingPage extends Component {
           <p className="lead">an app which provides you with gifs for trending hashtags on <a href="https://twitter.com/" className="font-weight-bold text-warning"> Twitter </a></p>
           {/* Modal windows*/}
           <div className="d-flex justify-content-center">
+            {/* If <LandingPage/> component has a prop "register", convey it to <ModalWindow/> component.
+            If a <ModalWindow/> component has this prop, modal window will be automatically opened when a user visits "/register" route*/}
             <div className="mr-2">
-            {this.props.register ? <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" register="true" /> : <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" />}
+            {this.props.register ? <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" register="true" authenticate={this.props.authenticate}/> : <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" authenticate={this.props.authenticate}/>}
             </div>
+            {/* If <LandingPage/> component has a prop "login", convey it to <ModalWindow/> component.
+            If a <ModalWindow/> component has this prop, modal window will be automatically opened when a user visits "/login" route*/}
             <div>
-              {this.props.login ? <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" login="true" /> : <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" />}
+              {this.props.login ? <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" login="true" authenticate={this.props.authenticate}/> : <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" authenticate={this.props.authenticate} />}
             </div>
           </div>
 

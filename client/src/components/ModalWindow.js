@@ -136,21 +136,28 @@ class ModalWindow extends React.Component {
           console.error(err);
         });
 
+        this.props.authenticate();
         this.props.history.push(`/profile`);
 
       }
       /**********When a user logs in******/
     } else if (this.props.signUp === "false") {
-       if (this.state.email && this.state.password) {
+       if (this.state.email && this.state.password && emailCheck === true) {
          const userInfo = {
            email: this.state.email,
            password: this.state.password
          };
 
          /* Send form data to Express server */
-         axios
+        return axios
           .post('/login', userInfo)
-          .then(() => console.log('User info is sent'))
+          .then((res) => {
+            console.log(res);
+            if (res.status === 200) {
+              this.props.authenticate();
+              this.props.history.push(`/profile`);
+            }
+          })
           .catch(err => {
             console.error(err);
           });
@@ -256,19 +263,5 @@ class ModalWindow extends React.Component {
   }
 }
 
-// /*A function which checks format of email*/
-// const validateEmail = (emailAddress) => {
-//   const mailFormat = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
-//   return mailFormat.test(emailAddress.value);
-// }
-// /* If typed email is in wrong format form is prevented from
-// submission and error message appears*/
-// validateEmail(email);
-// if (!validateEmail(email) && email.value.length > 0) {
-//   e.preventDefault();
-//   document.querySelectorAll('label')[1].textContent = "Invalid format of email";
-//   document.querySelectorAll('label')[1].setAttribute("class", "warning");
-//   email.setAttribute("class", "warning-field");
-// }
 
 export default withRouter(ModalWindow);
