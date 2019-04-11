@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-
+import { withRouter } from 'react-router-dom';
 
 class Logout extends Component {
 
@@ -8,8 +8,7 @@ class Logout extends Component {
   return axios
    .get('/logout')
    .then((response) => {
-     console.log(response)
-
+     this.props.history.push(`/`);
    })
    .catch(err => {
      console.error(err)
@@ -25,11 +24,10 @@ render () {
     <div id="not-found">
           <h3> Congratulations! </h3>
           <p> You are successfully logged out.</p>
-
     </div>
     );
   }
 }
 
 
-export default Logout;
+export default withRouter(Logout);

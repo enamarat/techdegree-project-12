@@ -1,17 +1,9 @@
 import React, { Component } from 'react';
 import Photo from '../images/conversation.jpg'
 import ModalWindow from './ModalWindow.js'
-import axios from 'axios';
+
 
 class LandingPage extends Component {
-
-  componentDidMount() {
-    return axios.get('/')
-    .then((res) => {
-      //console.log(res.request);
-      //console.log(res);
-    });
-  }
 
   render() {
     return(
@@ -50,7 +42,6 @@ class LandingPage extends Component {
     </div>
     );
   }
-
 }
 
 export default LandingPage;

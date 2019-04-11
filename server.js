@@ -152,7 +152,6 @@ app.get('/logout', function(req, res) {
         console.log(err);
      } else {
          res.send();
-         // res.redirect('/');
      }
   });
 });
