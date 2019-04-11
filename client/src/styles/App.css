@@ -21,6 +21,15 @@
 }
 /******************************************/
 #not-found {
-  border: 2px solid rgba(255, 0, 0, 1);
+  background-color: rgba(255, 0, 0, 0.5);
+  border-radius: 10%;
+}
 
+#not-found-header {
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10%;
+}
+
+#baboo {
+  width: 70%;
 }
