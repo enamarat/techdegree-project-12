@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import Photo from '../images/conversation.jpg'
 import ModalWindow from './ModalWindow.js'
-
+import axios from 'axios';
 
 class LandingPage extends Component {
+
+  componentDidMount() {
+    return axios.get('/')
+    .then((res) => {
+      //console.log(res.request);
+      //console.log(res);
+    });
+  }
 
   render() {
     return(
@@ -17,12 +25,12 @@ class LandingPage extends Component {
             {/* If <LandingPage/> component has a prop "register", convey it to <ModalWindow/> component.
             If a <ModalWindow/> component has this prop, modal window will be automatically opened when a user visits "/register" route*/}
             <div className="mr-2">
-            {this.props.register ? <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" register="true" authenticate={this.props.authenticate}/> : <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" authenticate={this.props.authenticate}/>}
+            {this.props.register ? <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" register="true" /> : <ModalWindow buttonLabel="Sign up" buttonColor="warning" signUp="true" />}
             </div>
             {/* If <LandingPage/> component has a prop "login", convey it to <ModalWindow/> component.
             If a <ModalWindow/> component has this prop, modal window will be automatically opened when a user visits "/login" route*/}
             <div>
-              {this.props.login ? <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" login="true" authenticate={this.props.authenticate}/> : <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" authenticate={this.props.authenticate} />}
+              {this.props.login ? <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" login="true" /> : <ModalWindow buttonLabel="Login" buttonColor="primary" signUp="false" />}
             </div>
           </div>
 

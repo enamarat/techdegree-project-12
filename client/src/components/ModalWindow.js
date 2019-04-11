@@ -144,13 +144,10 @@ class ModalWindow extends React.Component {
        return axios
         .post('/register', userInfo)
         .then((res) => {
-          //console.log(res);
           if (res.status === 201 && res.data.status !== 400) {
-            this.props.authenticate();
             this.props.history.push(`/profile`);
           }
           if (res.data.status === 400) {
-            //console.log(res.data);
              this.setState({
                emailExists: true
              });
@@ -159,9 +156,6 @@ class ModalWindow extends React.Component {
         .catch(err => {
           console.error(err);
         });
-
-
-
       }
       /**********When a user logs in******/
     } else if (this.props.signUp === "false") {
@@ -175,13 +169,10 @@ class ModalWindow extends React.Component {
         return axios
           .post('/login', userInfo)
           .then((res) => {
-            //console.log(res);
             if (res.status === 200 && res.data.status !== 401) {
-              this.props.authenticate();
               this.props.history.push(`/profile`);
             }
              if (res.data.status === 401) {
-               //console.log(res.data);
                 this.setState({
                   accessDenied: true
                 });
@@ -191,7 +182,6 @@ class ModalWindow extends React.Component {
             console.error(err);
           });
      }
-
     }
   }
 

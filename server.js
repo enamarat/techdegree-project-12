@@ -2,12 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // const path = require('path');
-// const cookieParser = require('cookie-parser');
+    //const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const createError = require('http-errors');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -36,7 +37,11 @@ db.once('open', () => {
 app.use(session({
   secret: 'I love you',
   resave: true,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: new MongoStore ({
+    mongooseConnection: db
+  }),
+  unset: 'destroy'
 }));
 
 
@@ -61,12 +66,12 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 ///app.use(express.json());
 ///app.use(express.urlencoded({ extended: false }));
-///app.use(cookieParser());
+///////app.use(cookieParser());
 ///app.use(express.static(path.join(__dirname, 'public')));
 
 ///////app.use('/', indexRouter);
 //app.use('/register', usersRouter);
-
+//let sessionRunning = null;
 
 /*********Routes******************/
 app.post('/register', function(req, res, next) {
@@ -84,8 +89,9 @@ app.post('/register', function(req, res, next) {
       res.send(err);
       return next(err);
     } else {
+      req.session.userId = user._id;
       res.status(201);
-      res.send();
+      res.send(req.session);
       }
   });
   } else {
@@ -100,8 +106,8 @@ app.post('/register', function(req, res, next) {
 
 app.post('/login', function(req, res, next) {
   if (req.body.email && req.body.password) {
-    console.log(req.body.email);
-    console.log(req.body.password);
+    //console.log(req.body.email);
+    //console.log(req.body.password);
     User.authenticate(req.body.email, req.body.password,
     function(error, user) {
       if (error || !user) {
@@ -113,28 +119,43 @@ app.post('/login', function(req, res, next) {
       } else {
         console.log('success!');
         req.session.userId = user._id;
-        res.send();
+        res.send(req.session);
       }
     });
   }
 });
 
-// app.post('/register', (req, res) => {
-//   console.log(req.body);
-//   res.send(
-//     `I received your POST request. This is what you sent me: ${req.body.post.email} and ${req.body.post.password}`,
-//   );
-// });
 
-// app.get('/profile', function(req, res) {
-//   res.send({ express: 'Welcome!' });
-// });
+app.get('/profile', function(req, res, next) {
+  if (!req.session.userId) {
+    const err = new Error("You are not authorized to view this page.");
+    err.status = 403;
+    res.send(err);
+    return next(err);
+  }
 
-app.get('/profile', (req, res, next) => {
-
+  User.findById(req.session.userId)
+    .exec(function(error, user) {
+      if(error) {
+        res.send(error);
+        return next(error);
+      } else {
+        res.send(req.session);
+      }
+    })
 });
 
 
+app.get('/logout', function(req, res) {
+  req.session.destroy(function(err){
+     if(err){
+        console.log(err);
+     } else {
+         res.send();
+         // res.redirect('/');
+     }
+  });
+});
 
 
 //catch 404 and forward to error handler

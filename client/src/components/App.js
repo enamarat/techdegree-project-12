@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import LandingPage from './LandingPage.js';
 import Profile from './Profile.js';
 import NotFound from './NotFound.js';
-import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom';
+import Logout from './Logout.js';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 
 // export const fakeAuth = {
@@ -49,24 +50,25 @@ class App extends Component {
     super(props);
 
     this.state = {
-      isAuthenticated: false
+
       // response: '',
       // post: '',
       // responseToPost: '',
     };
   }
 
-    authenticate = () => {
-      this.setState({
-        isAuthenticated: true
-      });
-    }
-
-    logOut = () => {
-      this.setState({
-        isAuthenticated: false
-      });
-    }
+          // authenticate = () => {
+          //   this.setState({
+          //     isAuthenticated: true
+          //   });
+          // }
+          //
+          // logOut = () => {
+          //   this.setState({
+          //     isAuthenticated: false,
+          //     loggedOut: true
+          //   });
+          // }
 
 
 
@@ -136,9 +138,10 @@ class App extends Component {
       <div className="App">
         <Switch>
           <Route exact path="/" component={LandingPage} />
-          <Route path="/register" render={()=> <LandingPage register="true" authenticate={this.authenticate}/>} />
-          <Route path="/login" render={()=> <LandingPage login="true" authenticate={this.authenticate}/>} />
-          {this.state.isAuthenticated === true ? <Route path="/profile" render={()=><Profile logout={this.logOut}/>} /> : <Redirect to="/login"/>}
+          <Route path="/register" render={()=> <LandingPage register="true" />} />
+          <Route path="/login" render={()=> <LandingPage login="true" />} />
+          <Route path="/profile" render={()=><Profile />} />
+          <Route path="/logout" component={Logout} />
           <Route component={NotFound}/>
         </Switch>
       </div>
@@ -148,3 +151,5 @@ class App extends Component {
 }
 
 export default App;
+
+//   { this.state.isAuthenticated === true ? <Route path="/profile" render={()=><Profile logout={this.logOut}/>} /> : <Redirect to="/login"/>}

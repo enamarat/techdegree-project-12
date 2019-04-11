@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
-//import {withRouter, Redirect} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 
 class Profile extends Component {
@@ -9,38 +9,33 @@ class Profile extends Component {
     super(props);
     this.state = {
     };
-
     this.getData = this.getData.bind(this);
   }
 
-getData() {
   /*Get data from Express server */
-  axios
-   .get('/profile')
-   .then((response) => console.log(response))
-   .catch(err => {
-     console.error(err);
-   });
-}
+  getData() {
+    return axios
+     .get('/profile')
+     .then((response) => {
+       if(response.data.status === 403) {
+         this.props.history.push(`/login`);
+       }
+     })
+     .catch(err => {
+       console.error(err);
+     });
+  }
 
-componentDidMount() {
-  this.getData();
-}
-
-
-leaveProfilePage = () => {
-  this.props.logout();
-  this.props.history.push(`/`);
-}
-
+  componentDidMount() {
+    this.getData();
+  }
 
   render() {
     return(
       <div>
-      
         <div className="d-flex justify-content-center">
           <h2> Trending hashtags on Twitter </h2>
-          <button className="btn btn-info" onClick={this.leaveProfilePage}> Log out </button>
+          <NavLink to="/logout"><button className="btn btn-info">  Log out  </button></NavLink>
         </div>
       </div>
     );
