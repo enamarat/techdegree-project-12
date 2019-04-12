@@ -59,6 +59,11 @@ class ModalWindow extends React.Component {
       });
     }
 
+    if (this.state.emailExists) {
+      this.setState({
+        emailExists: undefined
+      });
+    }
     /******Redirect to another route after opening a modal window******/
     if (this.props.signUp === "true") {
       if(this.state.modal===false) {

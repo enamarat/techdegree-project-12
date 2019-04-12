@@ -11,7 +11,7 @@ class LandingPage extends Component {
       <div className="jumbotron text-white" id="style-image">
         <div className="pt-5" id="overlay">
           <h1 className="display-4">In the Spotlight</h1>
-          <p className="lead">an app which provides you with gifs for trending hashtags on <a href="https://twitter.com/" className="font-weight-bold text-warning"> Twitter </a></p>
+          <p className="lead">an app which provides you with gifs for trending hashtags on <a href="https://facebook.com/" className="font-weight-bold text-warning"> Facebook </a></p>
           {/* Modal windows*/}
           <div className="d-flex justify-content-center">
             {/* If <LandingPage/> component has a prop "register", convey it to <ModalWindow/> component.

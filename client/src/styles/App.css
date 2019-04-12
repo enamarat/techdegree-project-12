@@ -3,7 +3,7 @@
 }
 
 
-/**********Styles**********************/
+/**********Landing page**********************/
 #style-image {
   background-size: cover;
   background-image: url("../images/people.jpg");
@@ -19,7 +19,7 @@
   bottom: 55vh;
   z-index: 0;
 }
-/******************************************/
+/**********Not found*********************/
 #not-found {
   background-color: rgba(255, 0, 0, 0.5);
   border-radius: 10%;
@@ -32,4 +32,10 @@
 
 #baboo {
   width: 70%;
+}
+
+/*********Profile****************/
+#user{
+  font-weight: bold;
+  color: orange;
 }

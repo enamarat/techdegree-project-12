@@ -17,6 +17,11 @@ class Profile extends Component {
     return axios
      .get('/profile')
      .then((response) => {
+
+       if(response.data.email) {
+         this.setState({ user: response.data.email});
+       }
+
        if(response.data.status === 403) {
          this.props.history.push(`/login`);
        }
@@ -33,10 +38,11 @@ class Profile extends Component {
   render() {
     return(
       <div>
-        <div className="d-flex justify-content-center">
-          <h2> Trending hashtags on Twitter </h2>
-          <NavLink to="/logout"><button className="btn btn-info">  Log out  </button></NavLink>
+        <div className="d-flex justify-content-end mt-3 mr-3">
+          <p className="mr-2"> You are signed in as <span id="user">{this.state.user}</span> </p>
+          <NavLink to="/logout"><button className="btn btn-danger">  Log out  </button></NavLink>
         </div>
+          <h2> Trending hashtags on Facebook </h2>
       </div>
     );
   }

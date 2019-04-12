@@ -136,11 +136,13 @@ app.get('/profile', function(req, res, next) {
 
   User.findById(req.session.userId)
     .exec(function(error, user) {
+
       if(error) {
         res.send(error);
         return next(error);
       } else {
-        res.send(req.session);
+        console.log(user);
+        res.send(user);
       }
     })
 });
