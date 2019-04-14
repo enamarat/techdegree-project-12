@@ -2,18 +2,24 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import {NavLink} from 'react-router-dom';
+import DropdownList from './DropdownList.js';
 
 
 class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
+        listOfCurrencies: []
     };
-    this.getData = this.getData.bind(this);
+    this.getUserData = this.getUserData.bind(this);
+    this.getExchangeRates = this.getExchangeRates.bind(this);
+    this.generateGrid = this.generateGrid.bind(this);
+    this.extractListOfCurrencies = this.extractListOfCurrencies.bind(this);
+    this.changeBaseCurrency = this.changeBaseCurrency.bind(this);
   }
 
   /*Get data from Express server */
-  getData() {
+  getUserData() {
     return axios
      .get('/profile')
      .then((response) => {
@@ -31,8 +37,83 @@ class Profile extends Component {
      });
   }
 
+  extractListOfCurrencies() {
+    for (let property in this.state.rates) {
+      if (this.state.rates.hasOwnProperty(property)) {
+      this.state.listOfCurrencies.push(property);
+      }
+    }
+  }
+
+  /* Get currency data from Foreign exchange rates API*/
+  getExchangeRates() {
+     axios
+    .get('https://api.exchangeratesapi.io/latest?base=USD')
+    .then((response) => {
+      this.setState({
+        date: response.data.date,
+        baseCurrency: response.data.base,
+        rates: response.data.rates
+      });
+      this.extractListOfCurrencies();
+    })
+  }
+
+
   componentDidMount() {
-    this.getData();
+    this.getUserData();
+    this.getExchangeRates();
+  }
+
+
+   generateGrid() {
+     let rows=[];
+     // let rowsWithKeys = rows.map((i, row) => {
+     //   rows[i].setAttribute("key", i);
+     // });
+     let count=0;
+     for (let property in this.state.rates) {
+       if (this.state.rates.hasOwnProperty(property)) {
+         count += 1;
+       //  console.log(property + ': ' + this.state.rates[property]);
+
+         rows.push(
+           <tr key={count}>
+             <td>{property}</td>
+             <td>{this.state.rates[property] }</td>
+           </tr>
+         );
+       }
+     }
+
+     return(
+       <table className="mx-auto">
+         <thead>
+           <tr>
+             <td className="columnTitle"> counter currency </td>
+             <td className="columnTitle"> rate </td>
+           </tr>
+         </thead>
+         <tbody>
+         {rows}
+         </tbody>
+       </table>
+     );
+   }
+
+   changeBaseCurrency(currency) {
+     axios
+    .get(`https://api.exchangeratesapi.io/latest?base=${currency}`)
+    .then(
+      (response) => {
+
+      this.setState({
+        date: response.data.date,
+        baseCurrency: response.data.base,
+        rates: response.data.rates
+      });
+
+    })
   }
 
   render() {
@@ -42,11 +123,15 @@ class Profile extends Component {
           <p className="mr-2"> You are signed in as <span id="user">{this.state.user}</span> </p>
           <NavLink to="/logout"><button className="btn btn-danger">  Log out  </button></NavLink>
         </div>
-          <h2> Trending hashtags on Facebook </h2>
+          <h3> Foreign exchange rates on <span className="operational-data">{this.state.date}</span> </h3>
+          <h4> Base currency: <span className="operational-data">{this.state.baseCurrency}</span> </h4>
+          <DropdownList changeBaseCurrency={this.changeBaseCurrency} listOfCurrencies={this.state.listOfCurrencies}/>
+          {this.generateGrid()}
       </div>
     );
   }
 }
 
+//{this.generateGrid()}
 
 export default withRouter(Profile);

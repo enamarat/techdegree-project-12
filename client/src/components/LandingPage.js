@@ -11,7 +11,7 @@ class LandingPage extends Component {
       <div className="jumbotron text-white" id="style-image">
         <div className="pt-5" id="overlay">
           <h1 className="display-4">In the Spotlight</h1>
-          <p className="lead">an app which provides you with gifs for trending hashtags on <a href="https://facebook.com/" className="font-weight-bold text-warning"> Facebook </a></p>
+          <p className="lead"> Get the latest data from financial markets! </p>
           {/* Modal windows*/}
           <div className="d-flex justify-content-center">
             {/* If <LandingPage/> component has a prop "register", convey it to <ModalWindow/> component.
@@ -35,7 +35,7 @@ class LandingPage extends Component {
             <img src={Photo} className="img-fluid"  alt="young people having a chat" />
           </div>
           <div className="col">
-            <p className="my-md-5"> Ever wondered what's on everybody's mind today? Guess what? Now you can be in possesion of such knowledge and demonstrate it to others with cool gifs! So nobody will argue that you are not aware of the hottest trends on the social media! </p>
+            <p className="my-md-5"> Ever wondered how to get rich? Guess what, now you have a chance! Get access to stock market trends, analyze foreign exchange rates and ride the lightning! </p>
           </div>
         </div>
       </div>

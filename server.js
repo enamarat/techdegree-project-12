@@ -141,7 +141,6 @@ app.get('/profile', function(req, res, next) {
         res.send(error);
         return next(error);
       } else {
-        console.log(user);
         res.send(user);
       }
     })
