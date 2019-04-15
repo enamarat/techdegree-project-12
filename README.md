@@ -9,3 +9,4 @@ Technologies used:
 
 API used:
 1. Foreign exchange rates API (https://exchangeratesapi.io)
+2. Unibit (https://unibit.ai)

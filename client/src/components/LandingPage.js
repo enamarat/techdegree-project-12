@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Photo from '../images/conversation.jpg'
 import ModalWindow from './ModalWindow.js'
 
-
 class LandingPage extends Component {
 
   render() {
@@ -35,7 +34,7 @@ class LandingPage extends Component {
             <img src={Photo} className="img-fluid"  alt="young people having a chat" />
           </div>
           <div className="col">
-            <p className="my-md-5"> Ever wondered how to get rich? Guess what, now you have a chance! Get access to stock market trends, analyze foreign exchange rates and ride the lightning! </p>
+            <p className="my-md-5"> Ever wondered how to get rich? Guess what, now you have a chance to be in possession of such knowledge! Get access to stock market trends, analyze foreign exchange rates and ride the lightning! </p>
           </div>
         </div>
       </div>

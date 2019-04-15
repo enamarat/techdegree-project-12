@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import {NavLink} from 'react-router-dom';
-import DropdownList from './DropdownList.js';
+
+import CurrencyExchangeRates from './CurrencyExchangeRates.js';
 
 
 class Profile extends Component {
@@ -120,17 +121,26 @@ class Profile extends Component {
   render() {
     return(
       <div>
+
         <div className="d-flex justify-content-end mt-3 mr-3">
           <p className="mr-2"> You are signed in as <span id="user">{this.state.user}</span> </p>
           <NavLink to="/logout"><button className="btn btn-danger">  Log out  </button></NavLink>
         </div>
-          <h3> Foreign exchange rates on <span className="operational-data">{this.state.date}</span> </h3>
-          <h4> Base currency: <span className="operational-data">{this.state.baseCurrency}</span> </h4>
-          <div className="d-flex justify-content-center">
-            <DropdownList className="mr-2" color="primary" title="Select base currency" date={this.state.date} baseCurrency={this.state.baseCurrency} changeBaseCurrency={this.changeBaseCurrencyOrDate} listOfCurrencies={this.state.listOfCurrencies}/>
-            <DropdownList color="secondary" title="Select date" date={this.state.date} baseCurrency={this.state.baseCurrency} changeDate={this.changeBaseCurrencyOrDate} />
+
+        <div className="row mx-auto">
+          <CurrencyExchangeRates
+          generateGrid={this.generateGrid}
+          date={this.state.date}
+          baseCurrency={this.state.baseCurrency}
+          changeBaseCurrencyOrDate={this.changeBaseCurrencyOrDate}
+          listOfCurrencies={this.state.listOfCurrencies}
+          />
+          <div className="col">
+            <h3> Stock market prices on <span className="operational-data">  </span> </h3>
+            <h4> Chosen stocks: <span className="operational-data">  </span> </h4>
           </div>
-            {this.generateGrid()}
+        </div>
+
       </div>
     );
   }
