@@ -15,7 +15,7 @@ class Profile extends Component {
     this.getExchangeRates = this.getExchangeRates.bind(this);
     this.generateGrid = this.generateGrid.bind(this);
     this.extractListOfCurrencies = this.extractListOfCurrencies.bind(this);
-    this.changeBaseCurrency = this.changeBaseCurrency.bind(this);
+    this.changeBaseCurrencyOrDate = this.changeBaseCurrencyOrDate.bind(this);
   }
 
   /*Get data from Express server */
@@ -56,7 +56,7 @@ class Profile extends Component {
         rates: response.data.rates
       });
       this.extractListOfCurrencies();
-    })
+    });
   }
 
 
@@ -87,7 +87,7 @@ class Profile extends Component {
      }
 
      return(
-       <table className="mx-auto">
+       <table className="mx-auto mt-3">
          <thead>
            <tr>
              <td className="columnTitle"> counter currency </td>
@@ -101,9 +101,9 @@ class Profile extends Component {
      );
    }
 
-   changeBaseCurrency(currency) {
+   changeBaseCurrencyOrDate(currency, date) {
      axios
-    .get(`https://api.exchangeratesapi.io/latest?base=${currency}`)
+    .get(`https://api.exchangeratesapi.io/${date}?base=${currency}`)
     .then(
       (response) => {
 
@@ -116,6 +116,7 @@ class Profile extends Component {
     })
   }
 
+
   render() {
     return(
       <div>
@@ -125,8 +126,11 @@ class Profile extends Component {
         </div>
           <h3> Foreign exchange rates on <span className="operational-data">{this.state.date}</span> </h3>
           <h4> Base currency: <span className="operational-data">{this.state.baseCurrency}</span> </h4>
-          <DropdownList changeBaseCurrency={this.changeBaseCurrency} listOfCurrencies={this.state.listOfCurrencies}/>
-          {this.generateGrid()}
+          <div className="d-flex justify-content-center">
+            <DropdownList className="mr-2" color="primary" title="Select base currency" date={this.state.date} baseCurrency={this.state.baseCurrency} changeBaseCurrency={this.changeBaseCurrencyOrDate} listOfCurrencies={this.state.listOfCurrencies}/>
+            <DropdownList color="secondary" title="Select date" date={this.state.date} baseCurrency={this.state.baseCurrency} changeDate={this.changeBaseCurrencyOrDate} />
+          </div>
+            {this.generateGrid()}
       </div>
     );
   }

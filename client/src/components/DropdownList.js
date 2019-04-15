@@ -7,6 +7,7 @@ class DropdownList extends React.Component {
 
     this.toggle = this.toggle.bind(this);
     this.getListOfCurrencies = this.getListOfCurrencies.bind(this);
+    this.setDate = this.setDate.bind(this);
 
     this.state = {
       dropdownOpen: false,
@@ -32,25 +33,32 @@ class DropdownList extends React.Component {
       dropdownOpen: !prevState.dropdownOpen
     }));
 
-    if (this.state.firstToggle===true){
-      this.getListOfCurrencies();
-    }
 
-    let trimmedString = event.target.textContent.substring(1,4);
+    if (this.props.changeBaseCurrency) {
+      if (this.state.firstToggle===true){
+        this.getListOfCurrencies();
+      }
 
-    if(event.target.textContent.length <= 5) {
-      this.props.changeBaseCurrency(trimmedString);
+      let trimmedString = event.target.textContent.substring(1,4);
+
+      if(event.target.textContent.length <= 5) {
+        this.props.changeBaseCurrency(trimmedString, this.props.date);
+      }
     }
-    
   }
 
+    setDate(event) {
+       if (this.props.changeDate) {
+           this.props.changeDate(this.props.baseCurrency, event.target.parentNode.firstChild.value);
+       }
+    }
 
 
   render() {
     return (
       <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle caret>
-          Select base currency
+        <DropdownToggle caret color={this.props.color}>
+          {this.props.title}
         </DropdownToggle>
         <DropdownMenu modifiers={{
           setMaxHeight: {
@@ -68,7 +76,7 @@ class DropdownList extends React.Component {
             },
           },
         }}>
-          {this.state.currencies}
+          {this.props.changeBaseCurrency ? this.state.currencies : <div className="d-flex"><input placeholder="2019-04-12"></input><button onClick={this.setDate}>Set date</button></div>}
         </DropdownMenu>
       </Dropdown>
     );
