@@ -44,8 +44,18 @@
   color: blue;
 }
 
+/*********Tables*****/
 .columnTitle {
   font-weight: bold;
-  color: white;
-  background-color: black;
+  color: black;
+  background-color: lime;
+}
+
+/*****StockMarketPrices****/
+table {
+ border-collapse: collapse;
+}
+
+tr, td {
+  border: 2px solid black;
 }

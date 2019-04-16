@@ -16,6 +16,8 @@ class DropdownList extends React.Component {
     };
   }
 
+  /* Get list of currencies from parent component and
+    insert them into tags*/
   getListOfCurrencies() {
     for (let i=0; i< this.props.listOfCurrencies.length; i++) {
       this.state.currencies.push(
@@ -33,7 +35,8 @@ class DropdownList extends React.Component {
       dropdownOpen: !prevState.dropdownOpen
     }));
 
-
+    /* Call the function for a component which has a specific prop -
+     dropdown menu "Select base currency" */
     if (this.props.changeBaseCurrency) {
       if (this.state.firstToggle===true){
         this.getListOfCurrencies();
@@ -47,9 +50,15 @@ class DropdownList extends React.Component {
     }
   }
 
+    /* This function is called when a "Set date" button
+      is clicked in dropdown menu "Select date" */
     setDate(event) {
        if (this.props.changeDate) {
-           this.props.changeDate(this.props.baseCurrency, event.target.parentNode.firstChild.value);
+         if (event.target.parentNode.firstChild.value.length !== 10) {
+           alert('Please type date in the following format: year-month-day. Example:2019-04-12');
+         } else if (event.target.parentNode.firstChild.value.length === 10) {
+            this.props.changeDate(this.props.baseCurrency, event.target.parentNode.firstChild.value);
+         }
        }
     }
 
