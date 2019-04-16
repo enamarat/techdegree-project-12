@@ -17,6 +17,7 @@ class StockMarketPrices extends Component {
     this.getStockPrices = this.getStockPrices.bind(this);
     this.generateStockTable = this.generateStockTable.bind(this);
     this.updateLoadingStatus = this.updateLoadingStatus.bind(this);
+    this.removeFromWatchlist = this.removeFromWatchlist.bind(this);
   }
 
   getStockPrices(ticker) {
@@ -51,6 +52,31 @@ class StockMarketPrices extends Component {
     });
   }
 
+  removeFromWatchlist(event) {
+    for(let i = 0; i < this.state.chosenTickers.length; i++) {
+      if (this.state.chosenTickers[i].ticker === event.target.parentNode.parentNode.firstChild.textContent) {
+
+        let index = this.state.chosenTickers.indexOf(this.state.chosenTickers[i]);
+        this.state.chosenTickers.splice(index, 1)
+        this.setState({
+          chosenTickers: this.state.chosenTickers
+        })
+
+      }
+    }
+
+
+    for (let r = 0; r < this.state.rows.length; r++) {
+     if (this.state.rows[r].props.children[0].props.children === event.target.parentNode.parentNode.firstChild.textContent) {
+         let index = this.state.rows.indexOf(this.state.rows[r]);
+         this.state.rows.splice(index, 1)
+         this.setState({
+           rows: this.state.rows
+         })
+     }
+    }
+  }
+
   generateStockTable() {
       for (let property in this.state.chosenTickers[this.state.chosenTickers.length-1]) {
 
@@ -67,7 +93,7 @@ class StockMarketPrices extends Component {
      this.setState(prevState=>({
        count: this.state.count + 1
      }));
-     this.state.tableData.push(<td key={this.state.count}> <button> Remove </button> </td>);
+     this.state.tableData.push(<td key={this.state.count}> <button onClick={this.removeFromWatchlist}> Remove </button> </td>);
 
      this.state.rows.push(
        <tr key={this.state.chosenTickers.length-1}>
@@ -75,7 +101,7 @@ class StockMarketPrices extends Component {
          {this.state.tableData[((this.state.chosenTickers.length-1)*5)+1]}
          {this.state.tableData[((this.state.chosenTickers.length-1)*5)+2]}
          {this.state.tableData[((this.state.chosenTickers.length-1)*5)+3]}
-          {this.state.tableData[((this.state.chosenTickers.length-1)*5)+4]}
+         {this.state.tableData[((this.state.chosenTickers.length-1)*5)+4]}
        </tr>
      );
      this.updateLoadingStatus();
