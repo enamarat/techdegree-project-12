@@ -69,9 +69,14 @@ class StockMarketPrices extends Component {
     for (let r = 0; r < this.state.rows.length; r++) {
      if (this.state.rows[r].props.children[0].props.children === event.target.parentNode.parentNode.firstChild.textContent) {
          let index = this.state.rows.indexOf(this.state.rows[r]);
-         this.state.rows.splice(index, 1)
+         this.state.rows.splice(index, 1);
          this.setState({
            rows: this.state.rows
+         })
+
+         this.state.tableData.splice((index*5), 5);
+         this.setState({
+           tableData: this.state.tableData
          })
      }
     }
@@ -86,7 +91,7 @@ class StockMarketPrices extends Component {
           }));
 
           this.state.tableData.push(
-              <td key={this.state.count}>{this.state.chosenTickers[this.state.chosenTickers.length-1][property] }</td>
+              <td key={this.state.count}>{this.state.chosenTickers[this.state.chosenTickers.length-1][property]}</td>
           );
         }
      }
