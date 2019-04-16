@@ -22,7 +22,11 @@ class Profile extends Component {
      .then((response) => {
 
        if(response.data.email) {
-         this.setState({ user: response.data.email});
+         this.setState({
+           user: response.data.email,
+           isLoggedIn: true
+         });
+
        }
 
        if(response.data.status === 403) {
@@ -42,16 +46,19 @@ class Profile extends Component {
   render() {
     return(
       <div>
-
+      {this.state.isLoggedIn ? <div>
         <div className="d-flex justify-content-end mt-3 mr-3">
           <p className="mr-2"> You are signed in as <span id="user">{this.state.user}</span> </p>
           <NavLink to="/logout"><button className="btn btn-danger">  Log out  </button></NavLink>
         </div>
 
         <div className="row mx-auto">
-          <CurrencyExchangeRates  />
-          <StockMarketPrices />
+          <CurrencyExchangeRates isLoggedIn={this.state.isLoggedIn} />
+          <StockMarketPrices isLoggedIn={this.state.isLoggedIn} />
         </div>
+
+        </div> : <h3 className="mt-5"> Loading... </h3> }
+
 
       </div>
     );

@@ -113,9 +113,11 @@ class StockMarketPrices extends Component {
   }
 
   componentDidMount() {
-    this.getStockPrices('aapl');
-    this.getStockPrices('twtr');
-    this.getStockPrices('tsla');
+    if (this.props.isLoggedIn) {
+      this.getStockPrices('aapl');
+      this.getStockPrices('twtr');
+      this.getStockPrices('tsla');
+    }
   }
 
   render () {

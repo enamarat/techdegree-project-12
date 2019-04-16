@@ -39,7 +39,9 @@ class CurrencyExchangeRates extends Component {
 
 
   componentDidMount() {
-    this.getExchangeRates();
+    if (this.props.isLoggedIn) {
+      this.getExchangeRates();
+    }
   }
 
     // Generate table which will render data from the API's request
