@@ -21,7 +21,7 @@ componentDidMount() {
 
 render () {
   return(
-    <div id="not-found">
+    <div>
           <h3> Congratulations! </h3>
           <p> You are successfully logged out.</p>
     </div>

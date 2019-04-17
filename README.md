@@ -9,4 +9,5 @@ Technologies used:
 
 API used:
 1. Foreign exchange rates API (https://exchangeratesapi.io)
-2. Unibit (https://unibit.ai)
+2. IEX Trading (https://iextrading.com/developer/docs)
+Both APIs are open-sourced and don't require a key.
