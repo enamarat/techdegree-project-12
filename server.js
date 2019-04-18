@@ -58,7 +58,7 @@ app.use(morgan('dev'));
 
 
 /*********Routes******************/
-app.use(‘/’, express.static(`${__dirname}/client/build`));
+app.use('/', express.static(`${__dirname}/client/build`));
 
 
 app.post('/register', function(req, res, next) {
