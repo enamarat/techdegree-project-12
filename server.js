@@ -17,7 +17,7 @@ const port = process.env.PORT || 5000;
 const User = require('./models/user.js');
 
 // mongodb connection
-mongoose.connect("mongodb://localhost:27017/in-the-spotlight");
+mongoose.connect(process.env.MONGOLAB_BLACK_URI || "mongodb://localhost:27017/in-the-spotlight");
 const db = mongoose.connection;
 
 // database connection error
