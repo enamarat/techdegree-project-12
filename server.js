@@ -1,8 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// const path = require('path');
-    //const cookieParser = require('cookie-parser');
+
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -12,9 +11,6 @@ const MongoStore = require('connect-mongo')(session);
 
 const app = express();
 const port = process.env.PORT || 5000;
-
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
 
 /***************** Database ******************/
 const User = require('./models/user.js');
@@ -45,7 +41,6 @@ app.use(session({
 }));
 
 
-
 /***********************/
 //use cors to allow cross origin resource sharing
 app.use(
@@ -58,20 +53,8 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
-// view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'pug');
-
 app.use(morgan('dev'));
-///app.use(express.json());
-///app.use(express.urlencoded({ extended: false }));
-///////app.use(cookieParser());
-///app.use(express.static(path.join(__dirname, 'public')));
 
-///////app.use('/', indexRouter);
-//app.use('/register', usersRouter);
-//let sessionRunning = null;
 
 /*********Routes******************/
 app.post('/register', function(req, res, next) {
@@ -106,8 +89,6 @@ app.post('/register', function(req, res, next) {
 
 app.post('/login', function(req, res, next) {
   if (req.body.email && req.body.password) {
-    //console.log(req.body.email);
-    //console.log(req.body.password);
     User.authenticate(req.body.email, req.body.password,
     function(error, user) {
       if (error || !user) {
@@ -174,12 +155,15 @@ app.use(function(err, req, res, next) {
   //res.render('error.pug');
 });
 
+/**********/
+if (process.env.NODE_ENV === 'production') {
+  // Serve any static files
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  // Handle React routing, return all requests to React app
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+}
+/**********/
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
-
-//start your server on port 5000
-// app.listen(5000, () => {
-//   console.log('Server Listening on port 5000');
-// });
-
-//module.exports = app;
