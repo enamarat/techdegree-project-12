@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-//import DropdownList from './DropdownList.js';
+import ModalWindowForStocks from './ModalWindowForStocks.js';
 
 
 class StockMarketPrices extends Component {
@@ -26,6 +26,7 @@ class StockMarketPrices extends Component {
     axios
      .get(`https://api.iextrading.com/1.0/stock/${symbol}/book?filter=symbol,latestPrice,latestTime,latestVolume,peRatio,previousClose`)
      .then((response) => {
+
        let formattedSymbol = response.data.quote.symbol.trim();
 
        this.state.chosenTickers.push(
@@ -99,18 +100,25 @@ class StockMarketPrices extends Component {
        count: this.state.count + 1
      }));
 
+        this.state.tableData.push(<td key={this.state.count}> <ModalWindowForStocks /> </td>);
+
+         this.setState(prevState=>({
+           count: this.state.count + 1
+         }));
+
      this.state.tableData.push(<td key={this.state.count}> <button onClick={this.removeFromWatchlist}> Remove </button> </td>);
 
 
      this.state.rows.push(
        <tr key={this.state.countRow}>
-         {this.state.tableData[(this.state.countRow)*7]}
-         {this.state.tableData[((this.state.countRow)*7)+1]}
-         {this.state.tableData[((this.state.countRow)*7)+2]}
-         {this.state.tableData[((this.state.countRow)*7)+3]}
-         {this.state.tableData[((this.state.countRow)*7)+4]}
-         {this.state.tableData[((this.state.countRow)*7)+5]}
-         {this.state.tableData[((this.state.countRow)*7)+6]}
+         {this.state.tableData[(this.state.countRow)*8]}
+         {this.state.tableData[((this.state.countRow)*8)+1]}
+         {this.state.tableData[((this.state.countRow)*8)+2]}
+         {this.state.tableData[((this.state.countRow)*8)+3]}
+         {this.state.tableData[((this.state.countRow)*8)+4]}
+         {this.state.tableData[((this.state.countRow)*8)+5]}
+         {this.state.tableData[((this.state.countRow)*8)+6]}
+         {this.state.tableData[((this.state.countRow)*8)+7]}
        </tr>
      );
 
@@ -129,10 +137,11 @@ class StockMarketPrices extends Component {
     }
   }
 
+
   render () {
     return(
       <div className="col mt-3">
-        <h3> Stock market prices on <span className="operational-data"> </span> </h3>
+        <h3> Stock market prices </h3>
         <h4> Add a ticker to your <span className="operational-data"> watchlist </span> </h4>
         <div className="d-flex-center">
           <div>
@@ -151,6 +160,7 @@ class StockMarketPrices extends Component {
                 <td className="columnTitle"> latest volume </td>
                 <td className="columnTitle"> peRatio </td>
                 <td className="columnTitle"> previousClose </td>
+                <td className="columnTitle"> historic prices </td>
                 <td className="columnTitle"> remove </td>
               </tr>
             </thead>

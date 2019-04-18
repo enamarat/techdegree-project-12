@@ -96,7 +96,7 @@ class CurrencyExchangeRates extends Component {
 
 render () {
   return(
-    <div className="col-lg-5 col-md-12 mr-2">
+    <div className="col-lg-5 col-md-12">
       <h3> Foreign exchange rates on <span className="operational-data">{this.state.date}</span> </h3>
       <h4> Base currency: <span className="operational-data">{this.state.baseCurrency}</span> </h4>
       <div className="d-flex justify-content-center">
