@@ -58,15 +58,8 @@ app.use(morgan('dev'));
 
 
 /*********Routes******************/
-app.get('/', function(req, res) {
-  req.session.destroy(function(err){
-    if(err){
-      console.log(err);
-    } else {
-      res.send();
-    }
-  });
-});
+app.use(‘/’, express.static(`${__dirname}/client/build`));
+
 
 app.post('/register', function(req, res, next) {
   if (req.body.email && req.body.password) {
@@ -143,6 +136,7 @@ app.get('/logout', function(req, res) {
   req.session.destroy(function(err){
     if(err){
       console.log(err);
+      res.send(err);
     } else {
       res.send();
     }
