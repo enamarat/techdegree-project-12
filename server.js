@@ -58,6 +58,16 @@ app.use(morgan('dev'));
 
 
 /*********Routes******************/
+app.get('/', function(req, res) {
+  req.session.destroy(function(err){
+    if(err){
+      console.log(err);
+    } else {
+      res.send();
+    }
+  });
+});
+
 app.post('/register', function(req, res, next) {
   if (req.body.email && req.body.password) {
     const userData = {
