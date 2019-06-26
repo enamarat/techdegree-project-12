@@ -8,7 +8,7 @@ Technologies used:
 4. Bootstrap
 
 API used:
-1. Foreign exchange rates API (https://exchangeratesapi.io)
+1. ExchangeRate-API (https://www.exchangerate-api.com/)
 2. IEX Trading (https://iextrading.com/developer/docs)
 Both APIs are open-sourced and don't require a key.
 

@@ -24,7 +24,7 @@ class StockMarketPrices extends Component {
   // Function sends a request to API, data from the response is saved in component's state
   getStockPrices(symbol) {
     axios
-     .get(`https://api.iextrading.com/1.0/stock/${symbol}/book?filter=symbol,latestPrice,latestTime,latestVolume,peRatio,previousClose`)
+     .get(`https://api.iextrading.com/1.0/stock/${symbol}/book?filter=symbol,latestPrice,latestTime,peRatio,previousClose`)
      .then((response) => {
 
        let formattedSymbol = response.data.quote.symbol.trim();
@@ -34,7 +34,6 @@ class StockMarketPrices extends Component {
             symbol: formattedSymbol,
             latestPrice: response.data.quote.latestPrice,
             latestTime: response.data.quote.latestTime,
-            latestVolume: response.data.quote.latestVolume,
             peRatio: response.data.quote.peRatio,
             previousClose: response.data.quote.previousClose
           }
@@ -68,7 +67,6 @@ class StockMarketPrices extends Component {
         })
       }
     }
-
 
     for (let r = 0; r < this.state.rows.length; r++) {
      if (this.state.rows[r].props.children[0].props.children[1].trim() === event.target.parentNode.parentNode.firstChild.textContent.trim()) {
@@ -108,17 +106,15 @@ class StockMarketPrices extends Component {
 
      this.state.tableData.push(<td key={this.state.count}> <button onClick={this.removeFromWatchlist}> Remove </button> </td>);
 
-
      this.state.rows.push(
        <tr key={this.state.countRow}>
-         {this.state.tableData[(this.state.countRow)*8]}
-         {this.state.tableData[((this.state.countRow)*8)+1]}
-         {this.state.tableData[((this.state.countRow)*8)+2]}
-         {this.state.tableData[((this.state.countRow)*8)+3]}
-         {this.state.tableData[((this.state.countRow)*8)+4]}
-         {this.state.tableData[((this.state.countRow)*8)+5]}
-         {this.state.tableData[((this.state.countRow)*8)+6]}
-         {this.state.tableData[((this.state.countRow)*8)+7]}
+         {this.state.tableData[(this.state.countRow)*7]}
+         {this.state.tableData[((this.state.countRow)*7)+1]}
+         {this.state.tableData[((this.state.countRow)*7)+2]}
+         {this.state.tableData[((this.state.countRow)*7)+3]}
+         {this.state.tableData[((this.state.countRow)*7)+4]}
+         {this.state.tableData[((this.state.countRow)*7)+5]}
+         {this.state.tableData[((this.state.countRow)*7)+6]}
        </tr>
      );
 
@@ -157,7 +153,6 @@ class StockMarketPrices extends Component {
                 <td className="columnTitle"> symbol </td>
                 <td className="columnTitle"> latest price </td>
                 <td className="columnTitle"> latest time </td>
-                <td className="columnTitle"> latest volume </td>
                 <td className="columnTitle"> peRatio </td>
                 <td className="columnTitle"> previousClose </td>
                 <td className="columnTitle"> historic prices </td>

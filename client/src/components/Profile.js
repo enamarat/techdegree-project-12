@@ -58,8 +58,6 @@ class Profile extends Component {
         </div>
 
         </div> : <h3 className="mt-5"> Loading... </h3> }
-
-
       </div>
     );
   }
