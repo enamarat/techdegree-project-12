@@ -6,7 +6,8 @@
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
     "start": "node server.js",
-    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
+    "freshtall": "rm -rf node_modules && rm -rf package-lock.json && npm install"
   },
   "dependencies": {
     "bcrypt": "^3.0.5",
