@@ -28,7 +28,7 @@ class CurrencyExchangeRates extends Component {
      axios
     .get('https://api.exchangerate-api.com/v4/latest/USD')
     .then((response) => {
-      console.log(response);
+  //    console.log(response);
       this.setState({
         date: response.data.date,
         baseCurrency: response.data.base,

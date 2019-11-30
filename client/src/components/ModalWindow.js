@@ -10,14 +10,9 @@ class ModalWindow extends React.Component {
       modal: false,
       accessDenied: false
     };
-
-    this.toggle = this.toggle.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.validateEmail = this.validateEmail.bind(this);
   }
 
-  toggle() {
+  toggle = () => {
     this.setState(prevState => ({
       modal: !prevState.modal
     }));
@@ -71,17 +66,17 @@ class ModalWindow extends React.Component {
         this.props.history.push(path);
       }
 
-      if(this.state.modal===true) {
+      if (this.state.modal===true) {
         let path = `/`;
         this.props.history.push(path);
       }
     } else if (this.props.signUp === "false") {
-      if(this.state.modal===false) {
+      if (this.state.modal===false) {
         let path = `/login`;
         this.props.history.push(path);
       }
 
-      if(this.state.modal===true) {
+      if (this.state.modal===true) {
         let path = `/`;
         this.props.history.push(path);
       }
@@ -92,7 +87,7 @@ class ModalWindow extends React.Component {
 
   /* Get name attribute from input fiedls and paste in into state with
   its corresponding value */
-  handleChange(event) {
+  handleChange = (event) => {
     const name = event.target.name;
 
     this.setState({
@@ -102,7 +97,7 @@ class ModalWindow extends React.Component {
   }
 
   /* A function which checks format of email */
-  validateEmail(emailAddress) {
+  validateEmail = (emailAddress) => {
     const mailFormat = /^(([^<>()[\]\\.,;:\s@]+(\.[^<>()[\]\\.,;:\s@]+)*)|(.+))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,4}))$/;
     return mailFormat.test(emailAddress);
   }
@@ -110,7 +105,7 @@ class ModalWindow extends React.Component {
 
   /* If data for all form fields are provided in correct format,
   submit data to backend server */
-  handleSubmit(event) {
+  handleSubmit = (event) => {
     event.preventDefault();
 
     this.setState({

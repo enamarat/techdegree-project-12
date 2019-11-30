@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import ModalWindowForStocks from './ModalWindowForStocks.js';
 
 
@@ -14,49 +13,33 @@ class StockMarketPrices extends Component {
       countRow: 0,
       loading: true
     }
-    this.searchByTicker = this.searchByTicker.bind(this);
-    this.getStockPrices = this.getStockPrices.bind(this);
-    this.generateStockTable = this.generateStockTable.bind(this);
-    this.updateLoadingStatus = this.updateLoadingStatus.bind(this);
-    this.removeFromWatchlist = this.removeFromWatchlist.bind(this);
   }
 
-  // Function sends a request to API, data from the response is saved in component's state
-  getStockPrices(symbol) {
-    axios
-     .get(`https://api.iextrading.com/1.0/stock/${symbol}/book?filter=symbol,latestPrice,latestTime,peRatio,previousClose`)
-     .then((response) => {
-
-       let formattedSymbol = response.data.quote.symbol.trim();
-
-       this.state.chosenTickers.push(
-         {
+  // Function which saves data from the response of an API request in component's state
+  getStockPrices = () => {
+       let formattedSymbol = this.state.json.quote.symbol.trim();
+       this.state.chosenTickers.push({
             symbol: formattedSymbol,
-            latestPrice: response.data.quote.latestPrice,
-            latestTime: response.data.quote.latestTime,
-            peRatio: response.data.quote.peRatio,
-            previousClose: response.data.quote.previousClose
-          }
-      );
+            latestPrice: this.state.json.quote.latestPrice,
+            latestTime: this.state.json.quote.latestTime,
+            peRatio: this.state.json.quote.peRatio,
+            previousClose: this.state.json.quote.previousClose
+          });
         this.generateStockTable();
-     })
-     .catch(err => {
-       console.error(err);
-     });
   }
 
   // Function inserts value of input field into request's query
-  searchByTicker(event) {
-    this.getStockPrices(event.target.parentNode.firstChild.value);
+  searchByTicker = (event) => {
+    this.makeAnAPIReguest(event.target.parentNode.firstChild.value);
   }
 
-  updateLoadingStatus() {
+  updateLoadingStatus = () => {
     this.setState({
       loading: false
     });
   }
 
-  removeFromWatchlist(event) {
+  removeFromWatchlist = (event) => {
     for(let i = 0; i < this.state.chosenTickers.length; i++) {
       if (this.state.chosenTickers[i].symbol === event.target.parentNode.parentNode.firstChild.textContent.trim()) {
 
@@ -80,9 +63,8 @@ class StockMarketPrices extends Component {
     }
   }
 
-  generateStockTable() {
+  generateStockTable = () => {
       for (let property in this.state.chosenTickers[this.state.chosenTickers.length-1]) {
-
         if (this.state.chosenTickers[this.state.chosenTickers.length-1].hasOwnProperty(property)) {
           this.setState(prevState=>({
             count: this.state.count + 1
@@ -98,13 +80,12 @@ class StockMarketPrices extends Component {
        count: this.state.count + 1
      }));
 
-        this.state.tableData.push(<td key={this.state.count}> <ModalWindowForStocks /> </td>);
-
+        this.state.tableData.push(<td key={this.state.count}> <ModalWindowForStocks symbol={this.state.chosenTickers[this.state.countRow].symbol} /> </td>);
          this.setState(prevState=>({
            count: this.state.count + 1
          }));
 
-     this.state.tableData.push(<td key={this.state.count}> <button onClick={this.removeFromWatchlist}> Remove </button> </td>);
+     this.state.tableData.push(<td key={this.state.count}> <button onClick={this.removeFromWatchlist} className="btn btn-warning"> Remove </button> </td>);
 
      this.state.rows.push(
        <tr key={this.state.countRow}>
@@ -125,14 +106,22 @@ class StockMarketPrices extends Component {
      this.updateLoadingStatus();
   }
 
-  componentDidMount() {
-    if (this.props.isLoggedIn) {
-      this.getStockPrices('aapl');
-      this.getStockPrices('twtr');
-      this.getStockPrices('tsla');
-    }
+
+  makeAnAPIReguest = async (symbol) => {
+    const api_url = `/profile/${symbol}`;
+    const response = await fetch(api_url);
+    const json = await response.json();
+    this.setState({
+      json: json
+    });
+    this.getStockPrices();
   }
 
+  componentDidMount() {
+      if (this.props.isLoggedIn) {
+        this.makeAnAPIReguest('aapl');
+      }
+    }
 
   render () {
     return(
@@ -142,7 +131,7 @@ class StockMarketPrices extends Component {
         <div className="d-flex-center">
           <div>
             <input placeholder="aapl"></input>
-            <button onClick={this.searchByTicker}>Search by ticker!</button>
+            <button onClick={this.searchByTicker} className="btn btn-primary">Search by ticker!</button>
           </div>
           {
             this.state.loading===true ?

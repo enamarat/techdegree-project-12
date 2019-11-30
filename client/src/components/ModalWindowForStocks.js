@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody  } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
-import axios from 'axios';
 
 class ModalWindowForStocks extends React.Component {
   constructor(props) {
@@ -9,12 +8,9 @@ class ModalWindowForStocks extends React.Component {
     this.state = {
       modal: false
     };
-
-    this.toggle = this.toggle.bind(this);
-    this.setDate = this.setDate.bind(this);
   }
 
-  toggle(event) {
+  toggle = (event) => {
     this.setState(prevState => ({
       modal: !prevState.modal
     }));
@@ -30,28 +26,30 @@ class ModalWindowForStocks extends React.Component {
     // Rise from event.target to table row and find its first child which is a stock's ticker, pass it to state
     if (this.state.modal === false) {
       this.setState({
-        symbol: event.target.parentNode.parentNode.parentNode.firstChild.textContent.trim(),
+        symbol: event.target.parentNode.parentNode.parentNode.firstChild.textContent.trim().toLowerCase(),
       });
+    }
+
+    // Create a new route when a modal window is opened
+    if (this.state.modal===false) {
+      let path = `/profile/${this.props.symbol.toLowerCase()}/historic-prices`;
+      this.props.history.push(path);
+    }
+
+    if (this.state.modal===true) {
+      let path = `/profile`;
+      this.props.history.push(path);
     }
   }
 
   // Pass date from input field to a request sent to API
-  setDate(event) {
+  setDate = async (event) => {
     let dateInput = event.target.parentNode.firstChild.value;
-
-    let formattedDate = `${dateInput[0]}${dateInput[1]}${dateInput[2]}${dateInput[3]}-${dateInput[4]}${dateInput[5]}-${dateInput[6]}${dateInput[7]}`;
-
-    axios
-     .get(`https://api.iextrading.com/1.0/stock/${this.state.symbol}/chart/date/${dateInput}`)
-     .then( (response) => {
-       this.setState({
-         stockPrice: response.data[response.data.length-1].marketClose,
-         date: formattedDate
-       });
-
-     })
-    .catch(err => {
-      console.error(err);
+    const api_url = `/profile/${this.props.symbol.toLowerCase()}/historic-prices/${dateInput}`;
+    const response = await fetch(api_url);
+    const json = await response.json();
+    this.setState({
+      json: json
     });
   }
 
@@ -60,15 +58,15 @@ class ModalWindowForStocks extends React.Component {
       <div>
         <Button onClick={this.toggle} color="secondary" size="sm"> Click me! </Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-          <ModalHeader toggle={this.toggle}> Historic prices </ModalHeader>
+          <ModalHeader toggle={this.toggle}> Historic prices of <span className="operational-data"> {this.props.symbol} </span> </ModalHeader>
 
           <ModalBody>
               <div>
                 <input placeholder="20190412"/>
                 <button onClick={this.setDate} className="btn btn-warning"> Set date </button>
                 {/* Show historic prices only if date is provided and button "Set date" is clicked */}
-                {this.state.symbol && this.state.date && this.state.stockPrice ?
-                  <p> {`The price of`} <span className="operational-data">{`${this.state.symbol}`}</span> {`on`} <span className="operational-data"> {`${this.state.date}`} </span> {`at market close was`} <span className="operational-data"> {`${this.state.stockPrice}`} </span> {`$.`} </p>
+                {this.state.json ?
+                  <p> {`The price of`} <span className="operational-data">{`${this.props.symbol}`}</span> {`on`} <span className="operational-data"> {`${this.state.json[this.state.json.length-1].date}`} </span> {`at market close was`} <span className="operational-data"> {`${this.state.json[this.state.json.length-1].marketClose}`} </span> {`$.`} </p>
                    : null}
               </div>
           </ModalBody>

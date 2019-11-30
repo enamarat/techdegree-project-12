@@ -1,8 +1,9 @@
+require('dotenv').config();
+//console.log(process.env.REACT_APP_API_KEY);
+const fetch = require('node-fetch');
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-
-
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -53,13 +54,10 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 app.use(morgan('dev'));
-
 
 /*********Routes******************/
 app.use('/', express.static(`${__dirname}/client/build`));
-
 
 app.post('/register', function(req, res, next) {
   if (req.body.email && req.body.password) {
@@ -74,7 +72,6 @@ app.post('/register', function(req, res, next) {
       const err = new Error('The entered email already exists!');
       err.status = 400;
       res.send(err);
-      return next(err);
     } else {
       req.session.userId = user._id;
       res.status(201);
@@ -85,7 +82,6 @@ app.post('/register', function(req, res, next) {
     const err = new Error('All fields required!');
     err.status = 400;
     res.send(err);
-    return next(err);
   }
 
 });
@@ -100,7 +96,6 @@ app.post('/login', function(req, res, next) {
         const err = new Error('Wrong email or password.');
         err.status = 401;
         res.send(err);
-        return next (err);
       } else {
         console.log('success!');
         req.session.userId = user._id;
@@ -111,26 +106,48 @@ app.post('/login', function(req, res, next) {
 });
 
 
-app.get('/profile', function(req, res, next) {
+
+
+app.get('/profile', async function(req, res) {
+
   if (!req.session.userId) {
     const err = new Error("You are not authorized to view this page.");
     err.status = 403;
     res.send(err);
-    return next(err);
   }
 
   User.findById(req.session.userId)
-    .exec(function(error, user) {
-
+    .exec(async function(error, user) {
       if(error) {
         res.send(error);
-        return next(error);
       } else {
-        res.send(user);
+        const api_url = `https://cloud.iexapis.com/stable/stock/aapl/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
+        const fetch_response = await fetch(api_url);
+        const json = await fetch_response.json();
+        const completeData = {
+          user: user
+        }
+        res.json(completeData);
       }
-    })
+    });
 });
 
+app.get('/profile/:symbol', async function(req, res) {
+  const symbol = req.params.symbol;
+  const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
+  const fetch_response = await fetch(api_url);
+  const json = await fetch_response.json();
+  res.json(json);
+});
+
+app.get('/profile/:symbol/historic-prices/:date', async function(req, res) {
+  const symbol = req.params.symbol;
+  const date = req.params.date;
+  const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/chart/date/${date}?token=${process.env.REACT_APP_API_KEY}`;
+  const fetch_response = await fetch(api_url);
+  const json = await fetch_response.json();
+  res.json(json);
+});
 
 app.get('/logout', function(req, res) {
   req.session.destroy(function(err){
@@ -157,7 +174,6 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  //res.render('error.pug');
 });
 
 /**********/

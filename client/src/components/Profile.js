@@ -9,27 +9,22 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
     };
-    this.getUserData = this.getUserData.bind(this);
-
   }
 
   /*Get data from Express server */
-  getUserData() {
+  getUserData = () => {
     return axios
      .get('/profile')
      .then((response) => {
-
-       if(response.data.email) {
+       if(response.data.user.email) {
          this.setState({
-           user: response.data.email,
+           user: response.data.user.email,
            isLoggedIn: true
          });
-
        }
 
-       if(response.data.status === 403) {
+       if(response.status === 403) {
          this.props.history.push(`/login`);
        }
      })
