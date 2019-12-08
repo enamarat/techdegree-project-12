@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ModalWindowForStocks from './ModalWindowForStocks.js';
-
+//import axios from 'axios';
 
 class StockMarketPrices extends Component {
   constructor(props) {
@@ -11,7 +11,8 @@ class StockMarketPrices extends Component {
       tableData: [],
       count: 0,
       countRow: 0,
-      loading: true
+      loading: true,
+      noTickersInWatchlist: false
     }
   }
 
@@ -30,19 +31,47 @@ class StockMarketPrices extends Component {
 
   // Function inserts value of input field into request's query
   searchByTicker = (event) => {
-    this.makeAnAPIReguest(event.target.parentNode.firstChild.value);
+    const inputValue = event.target.parentNode.firstChild.value;
+
+    // prevent sending of an API request if it has already been sent with the same ticker
+    let tickerHasAlreadyBeenAddedToWatchlist = false;
+    if (this.state.chosenTickers.length > 0) {
+      this.state.chosenTickers.forEach(ticker => {
+        if (inputValue.toUpperCase() === ticker.symbol) {
+          tickerHasAlreadyBeenAddedToWatchlist = true;
+        }
+      });
+
+    /***/
+    if (tickerHasAlreadyBeenAddedToWatchlist === false) {
+      if (inputValue.length !== 0) {
+        this.makeAnAPIReguest(inputValue);
+      } else {
+        alert("Please type something into the input field!");
+      }
+    } else if (tickerHasAlreadyBeenAddedToWatchlist === true) {
+       alert("You have already added this ticker to your watchlist!");
+       tickerHasAlreadyBeenAddedToWatchlist = false;
+    }
+    /***/
+    } else if (this.state.chosenTickers.length === 0) {
+      this.makeAnAPIReguest(inputValue);
+    }
+
+    document.querySelector("#search").value = "";
   }
 
   updateLoadingStatus = () => {
     this.setState({
-      loading: false
+      loading: false,
+      noTickersInWatchlist: false
     });
   }
 
-  removeFromWatchlist = (event) => {
+  removeFromWatchlist = async (event) => {
+    const symbol = event.target.parentNode.parentNode.firstChild.textContent.trim();
     for(let i = 0; i < this.state.chosenTickers.length; i++) {
-      if (this.state.chosenTickers[i].symbol === event.target.parentNode.parentNode.firstChild.textContent.trim()) {
-
+      if (this.state.chosenTickers[i].symbol === symbol) {
         let index = this.state.chosenTickers.indexOf(this.state.chosenTickers[i]);
         this.state.chosenTickers.splice(index, 1)
         this.setState({
@@ -53,15 +82,28 @@ class StockMarketPrices extends Component {
 
     for (let r = 0; r < this.state.rows.length; r++) {
      if (this.state.rows[r].props.children[0].props.children[1].trim() === event.target.parentNode.parentNode.firstChild.textContent.trim()) {
-
          let index = this.state.rows.indexOf(this.state.rows[r]);
          this.state.rows.splice(index, 1);
          this.setState({
            rows: this.state.rows
-         })
+         });
      }
     }
-  }
+
+    // delete symbol from a database
+  const url = `/profile/delete/${symbol}`;
+  const response = await fetch(url);
+  const json = await response.json();
+  console.log(json);
+
+  /*return axios
+   .post(`/profile/delete/${symbol}`)
+   .then((response) => {
+    console.log(response);
+  });*/
+}
+
+
 
   generateStockTable = () => {
       for (let property in this.state.chosenTickers[this.state.chosenTickers.length-1]) {
@@ -80,7 +122,7 @@ class StockMarketPrices extends Component {
        count: this.state.count + 1
      }));
 
-        this.state.tableData.push(<td key={this.state.count}> <ModalWindowForStocks symbol={this.state.chosenTickers[this.state.countRow].symbol} /> </td>);
+        this.state.tableData.push(<td key={this.state.count}> <ModalWindowForStocks symbol={this.state.chosenTickers[this.state.chosenTickers.length-1].symbol} /> </td>);
          this.setState(prevState=>({
            count: this.state.count + 1
          }));
@@ -115,11 +157,29 @@ class StockMarketPrices extends Component {
       json: json
     });
     this.getStockPrices();
+    }
+
+
+  retrieveTickersFromDatabase = async () => {
+    const url = `/profile`;
+    const response = await fetch(url);
+    const json = await response.json();
+
+    if (json.user.watchedTickers.length > 0) {
+      json.user.watchedTickers.forEach(ticker => {
+        this.makeAnAPIReguest(ticker.name);
+      });
+    } else if (json.user.watchedTickers.length === 0) {
+      this.setState({
+        loading: false,
+        noTickersInWatchlist: true
+      });
+    }
   }
 
-  componentDidMount() {
-      if (this.props.isLoggedIn) {
-        this.makeAnAPIReguest('aapl');
+  componentDidMount () {
+    if (this.props.isLoggedIn) {
+        this.retrieveTickersFromDatabase();
       }
     }
 
@@ -130,7 +190,7 @@ class StockMarketPrices extends Component {
         <h4> Add a ticker to your <span className="operational-data"> watchlist </span> </h4>
         <div className="d-flex-center">
           <div>
-            <input placeholder="aapl"></input>
+            <input id="search" placeholder="aapl"></input>
             <button onClick={this.searchByTicker} className="btn btn-primary">Search by ticker!</button>
           </div>
           {
@@ -152,6 +212,11 @@ class StockMarketPrices extends Component {
               {this.state.rows}
             </tbody>
           </table>
+          }
+          {
+            this.state.noTickersInWatchlist===true?
+            <p className="mt-3"> You haven't added any tickers to your watchlist yet. </p>
+            : null
           }
         </div>
       </div>

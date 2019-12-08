@@ -1,5 +1,4 @@
 require('dotenv').config();
-//console.log(process.env.REACT_APP_API_KEY);
 const fetch = require('node-fetch');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -106,10 +105,7 @@ app.post('/login', function(req, res, next) {
 });
 
 
-
-
 app.get('/profile', async function(req, res) {
-
   if (!req.session.userId) {
     const err = new Error("You are not authorized to view this page.");
     err.status = 403;
@@ -134,10 +130,46 @@ app.get('/profile', async function(req, res) {
 
 app.get('/profile/:symbol', async function(req, res) {
   const symbol = req.params.symbol;
-  const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
-  const fetch_response = await fetch(api_url);
-  const json = await fetch_response.json();
-  res.json(json);
+
+  await User.find({"watchedTickers.name": symbol}).exec(async function(err, results) {
+    if (err) {
+      console.log(err);
+    }
+
+    // if a ticker wasn't saved to a database previously
+    if (results.length === 0) {
+      // send an API request
+      const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
+      const fetch_response = await fetch(api_url);
+      const json = await fetch_response.json();
+
+      // save ticker to a database
+       await User.findByIdAndUpdate(req.session.userId,
+       { $push: { watchedTickers: {name: symbol} } },
+       { new: true, upsert: true }
+      );
+
+      res.json(json);
+    } else {
+      const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
+      const fetch_response = await fetch(api_url);
+      const json = await fetch_response.json();
+      res.json(json);
+    }
+  });
+
+});
+
+app.get('/profile/delete/:symbol', async function(req, res) {
+  const symbol = req.params.symbol.toLowerCase();
+  await User.findByIdAndUpdate(req.session.userId,
+    { $pull: { "watchedTickers": {"name": symbol} } },
+    { safe: true, multi: true }
+  );
+  const info = {
+    status: "ok"
+  }
+  res.json(info);
 });
 
 app.get('/profile/:symbol/historic-prices/:date', async function(req, res) {

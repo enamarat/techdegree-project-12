@@ -102,7 +102,6 @@ class ModalWindow extends React.Component {
     return mailFormat.test(emailAddress);
   }
 
-
   /* If data for all form fields are provided in correct format,
   submit data to backend server */
   handleSubmit = (event) => {

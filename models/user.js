@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  watchedTickers: [{name: String}]
 });
 
 // hash passwords before saving users to a database

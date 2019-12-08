@@ -10,13 +10,14 @@ Technologies used:
 API used:
 1. ExchangeRate-API (https://www.exchangerate-api.com/)
 2. IEX Trading (https://iexcloud.io/)
+
 ExchangeRate-API doesn't require a key.
 To get an access to IEX Trading API you must create an account and get an API key.
 
 In order to run this project locally you need to:
 1. download project files from Github repository;
 
-2. create an file called ".env" in the root folder of your project; inside the file type your API key for IEX Trading in the following format: REACT_APP_API_KEY=your API key
+2. create a file called ".env" in the root folder of your project; inside the file type your API key for IEX Trading in the following format: REACT_APP_API_KEY=your API key
 
 3. navigate to project's root folder in your terminal and run "npm install" command;
 example:
