@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import ModalWindowForStocks from './ModalWindowForStocks.js';
-//import axios from 'axios';
 
 class StockMarketPrices extends Component {
   constructor(props) {
@@ -32,8 +31,7 @@ class StockMarketPrices extends Component {
   // Function inserts value of input field into request's query
   searchByTicker = (event) => {
     const inputValue = event.target.parentNode.firstChild.value;
-
-    // prevent sending of an API request if it has already been sent with the same ticker
+    // prevent sending of an API request, if it has already been sent with the same ticker
     let tickerHasAlreadyBeenAddedToWatchlist = false;
     if (this.state.chosenTickers.length > 0) {
       this.state.chosenTickers.forEach(ticker => {
@@ -42,18 +40,17 @@ class StockMarketPrices extends Component {
         }
       });
 
-    /***/
-    if (tickerHasAlreadyBeenAddedToWatchlist === false) {
-      if (inputValue.length !== 0) {
-        this.makeAnAPIReguest(inputValue);
-      } else {
-        alert("Please type something into the input field!");
+      if (tickerHasAlreadyBeenAddedToWatchlist === false) {
+        if (inputValue.length !== 0) {
+          this.makeAnAPIReguest(inputValue);
+        } else {
+          alert("Please type something into the input field!");
+        }
+      } else if (tickerHasAlreadyBeenAddedToWatchlist === true) {
+         alert("You have already added this ticker to your watchlist!");
+         tickerHasAlreadyBeenAddedToWatchlist = false;
       }
-    } else if (tickerHasAlreadyBeenAddedToWatchlist === true) {
-       alert("You have already added this ticker to your watchlist!");
-       tickerHasAlreadyBeenAddedToWatchlist = false;
-    }
-    /***/
+
     } else if (this.state.chosenTickers.length === 0) {
       this.makeAnAPIReguest(inputValue);
     }
@@ -81,7 +78,7 @@ class StockMarketPrices extends Component {
     }
 
     for (let r = 0; r < this.state.rows.length; r++) {
-     if (this.state.rows[r].props.children[0].props.children[1].trim() === event.target.parentNode.parentNode.firstChild.textContent.trim()) {
+     if (this.state.rows[r].props.children[0].props.children[1].trim() === symbol) {
          let index = this.state.rows.indexOf(this.state.rows[r]);
          this.state.rows.splice(index, 1);
          this.setState({
@@ -90,20 +87,13 @@ class StockMarketPrices extends Component {
      }
     }
 
-    // delete symbol from a database
+  // delete symbol from a database
   const url = `/profile/delete/${symbol}`;
   const response = await fetch(url);
   const json = await response.json();
   console.log(json);
 
-  /*return axios
-   .post(`/profile/delete/${symbol}`)
-   .then((response) => {
-    console.log(response);
-  });*/
 }
-
-
 
   generateStockTable = () => {
       for (let property in this.state.chosenTickers[this.state.chosenTickers.length-1]) {
@@ -146,6 +136,35 @@ class StockMarketPrices extends Component {
      });
 
      this.updateLoadingStatus();
+     window.setTimeout(this.updateStockPrice, 1000);
+  }
+
+  updateStockPrice = async () => {
+    /* const timer = window.setInterval(countItDown, 1000);
+    window.clearInterval(timer);*/
+    const existingRows = document.querySelectorAll("#stocks tbody tr");
+    const lastRow = document.querySelectorAll("#stocks tbody tr")[existingRows.length-1];
+    const columnOfTheSymbol = lastRow.querySelectorAll("td")[0];
+    const columnOfTheLatestPrice = lastRow.querySelectorAll("td")[1];
+    columnOfTheLatestPrice.style.color = "blue";
+    columnOfTheLatestPrice.style.fontWeight = "bold";
+
+    const api_url = `/profile/${columnOfTheSymbol.textContent.trim().toLowerCase()}`;
+    const response = await fetch(api_url);
+    const json2 = await response.json();
+
+    console.log(json2.quote.latestPrice);
+    console.log(json2.quote.latestTime);
+    columnOfTheLatestPrice.textContent = json2.quote.latestPrice;
+
+
+    //latestTime: this.state.json.quote.latestTime;
+
+    /*for(let i = 0; i < this.state.chosenTickers.length; i++) {
+      if (this.state.chosenTickers[i].symbol === columnOfTheSymbol.textContent.trim()) {
+
+      }
+    }*/
   }
 
 
@@ -154,10 +173,11 @@ class StockMarketPrices extends Component {
     const response = await fetch(api_url);
     const json = await response.json();
     this.setState({
-      json: json
-    });
+        json: json
+      });
+      console.log(json.quote.latestPrice);
     this.getStockPrices();
-    }
+  }
 
 
   retrieveTickersFromDatabase = async () => {
@@ -196,7 +216,7 @@ class StockMarketPrices extends Component {
           {
             this.state.loading===true ?
             <p className="mt-3"> Loading... </p>
-          : <table className="mx-auto mt-3">
+          : <table className="mx-auto mt-3" id="stocks">
             <thead>
               <tr>
                 <td className="columnTitle"> symbol </td>

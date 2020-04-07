@@ -117,9 +117,6 @@ app.get('/profile', async function(req, res) {
       if(error) {
         res.send(error);
       } else {
-        const api_url = `https://cloud.iexapis.com/stable/stock/aapl/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
-        const fetch_response = await fetch(api_url);
-        const json = await fetch_response.json();
         const completeData = {
           user: user
         }
@@ -130,7 +127,6 @@ app.get('/profile', async function(req, res) {
 
 app.get('/profile/:symbol', async function(req, res) {
   const symbol = req.params.symbol;
-
   await User.find({"watchedTickers.name": symbol}).exec(async function(err, results) {
     if (err) {
       console.log(err);
@@ -148,7 +144,6 @@ app.get('/profile/:symbol', async function(req, res) {
        { $push: { watchedTickers: {name: symbol} } },
        { new: true, upsert: true }
       );
-
       res.json(json);
     } else {
       const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
