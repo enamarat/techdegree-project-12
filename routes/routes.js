@@ -1,5 +1,6 @@
 const User = require('../models/user.js');
 const mongoose = require('mongoose');
+const fetch = require('node-fetch');
 
 module.exports = function (app) {
   app.post('/register', function(req, res, next) {
