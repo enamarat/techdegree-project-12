@@ -15,21 +15,6 @@ class ModalWindowForStocks extends React.Component {
       modal: !prevState.modal
     }));
 
-    // If modal window is reopened, previous data it displayed will be erased
-    if (this.state.date && this.state.stockPrice) {
-      this.setState({
-        date: undefined,
-        stockPrice: undefined
-      });
-    }
-
-    // Rise from event.target to table row and find its first child which is a stock's ticker, pass it to state
-    if (this.state.modal === false) {
-      this.setState({
-        symbol: event.target.parentNode.parentNode.parentNode.firstChild.textContent.trim().toLowerCase(),
-      });
-    }
-
     // Create a new route when a modal window is opened
     if (this.state.modal===false) {
       let path = `/profile/${this.props.symbol.toLowerCase()}/historic-prices`;
@@ -65,9 +50,10 @@ class ModalWindowForStocks extends React.Component {
                 <input placeholder="20190412"/>
                 <button onClick={this.setDate} className="btn btn-warning"> Set date </button>
                 {/* Show historic prices only if date is provided and button "Set date" is clicked */}
-                {this.state.json ?
-                  <p> {`The price of`} <span className="operational-data">{`${this.props.symbol}`}</span> {`on`} <span className="operational-data"> {`${this.state.json[this.state.json.length-1].date}`} </span> {`at market close was`} <span className="operational-data"> {`${this.state.json[this.state.json.length-1].marketClose}`} </span> {`$.`} </p>
+                {this.state.json  && this.state.json.length > 0 ?
+                  <p> {`The price of`} <span className="operational-data">{`${this.props.symbol}`}</span> {`on`} <span className="operational-data"> {`${this.state.json[this.state.json.length-1].date}`} </span> {`at market close was`} <span className="operational-data"> {`${this.state.json[this.state.json.length-1].close}`} </span> {`$.`} </p>
                    : null}
+                   {this.state.json  && this.state.json.length === 0 ? <p> {`Sorry! No data available!`} </p> : null}
               </div>
           </ModalBody>
         </Modal>
@@ -75,6 +61,5 @@ class ModalWindowForStocks extends React.Component {
     );
   }
 }
-
 
 export default withRouter(ModalWindowForStocks);

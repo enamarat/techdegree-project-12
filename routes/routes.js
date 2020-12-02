@@ -10,7 +10,7 @@ module.exports = function (app) {
         password: req.body.password
       };
 
-    // if email of a newly created user mathces email of an existing user, throw an error
+    // if email of a newly created user matches email of an existing user, throw an error
     User.create(userData, (err, user) => {
       if(err) {
         const err = new Error('The entered email already exists!');
@@ -47,14 +47,12 @@ module.exports = function (app) {
     }
   });
 
-
   app.get('/profile', async function(req, res) {
     if (!req.session.userId) {
       const err = new Error("You are not authorized to view this page.");
       err.status = 403;
       res.send(err);
     }
-
     User.findById(req.session.userId)
       .exec(async function(error, user) {
         if(error) {
@@ -74,31 +72,22 @@ module.exports = function (app) {
       if (err) {
         console.log(err);
       }
-
-      // if a ticker wasn't saved to a database previously
+      //
+      const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
+      const fetch_response = await fetch(api_url);
+      const json = await fetch_response.json();
+      // if a ticker wasn't saved to a database previously save it
       if (results.length === 0) {
-        // send an API request
-        const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
-        const fetch_response = await fetch(api_url);
-        const json = await fetch_response.json();
-
-        // save ticker to a database
          await User.findByIdAndUpdate(req.session.userId,
          { $push: { watchedTickers: {name: symbol} } },
          { new: true, upsert: true }
         );
-        res.json(json);
-      } else {
-        const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/batch?types=quote,news,chart&range=1m&last=10&token=${process.env.REACT_APP_API_KEY}`;
-        const fetch_response = await fetch(api_url);
-        const json = await fetch_response.json();
-        res.json(json);
       }
+      res.json(json);
     });
-
   });
 
-  app.get('/profile/delete/:symbol', async function(req, res) {
+  app.delete('/profile/:symbol', async function(req, res) {
     const symbol = req.params.symbol.toLowerCase();
     await User.findByIdAndUpdate(req.session.userId,
       { $pull: { "watchedTickers": {"name": symbol} } },
@@ -113,9 +102,11 @@ module.exports = function (app) {
   app.get('/profile/:symbol/historic-prices/:date', async function(req, res) {
     const symbol = req.params.symbol;
     const date = req.params.date;
+    //
     const api_url = `https://cloud.iexapis.com/stable/stock/${symbol}/chart/date/${date}?token=${process.env.REACT_APP_API_KEY}`;
     const fetch_response = await fetch(api_url);
     const json = await fetch_response.json();
+    console.log(json);
     res.json(json);
   });
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ModalWindowForStocks from './ModalWindowForStocks.js';
+import Stock from './Stock.js';
 
 class StockMarketPrices extends Component {
   constructor(props) {
@@ -7,55 +7,36 @@ class StockMarketPrices extends Component {
     this.state = {
       chosenTickers: [],
       rows: [],
-      tableData: [],
-      count: 0,
       countRow: 0,
       loading: true,
-      noTickersInWatchlist: false
+      noTickersInWatchlist: false,
+      intervals: []
     }
   }
 
-  // Function which saves data from the response of an API request in component's state
-  getStockPrices = () => {
-       let formattedSymbol = this.state.json.quote.symbol.trim();
-       this.state.chosenTickers.push({
-            symbol: formattedSymbol,
-            latestPrice: this.state.json.quote.latestPrice,
-            latestTime: this.state.json.quote.latestTime,
-            peRatio: this.state.json.quote.peRatio,
-            previousClose: this.state.json.quote.previousClose
-          });
-        this.generateStockTable();
-  }
-
-  // Function inserts value of input field into request's query
-  searchByTicker = (event) => {
-    const inputValue = event.target.parentNode.firstChild.value;
-    // prevent sending of an API request, if it has already been sent with the same ticker
-    let tickerHasAlreadyBeenAddedToWatchlist = false;
-    if (this.state.chosenTickers.length > 0) {
-      this.state.chosenTickers.forEach(ticker => {
-        if (inputValue.toUpperCase() === ticker.symbol) {
-          tickerHasAlreadyBeenAddedToWatchlist = true;
-        }
-      });
-
-      if (tickerHasAlreadyBeenAddedToWatchlist === false) {
-        if (inputValue.length !== 0) {
-          this.makeAnAPIReguest(inputValue);
-        } else {
-          alert("Please type something into the input field!");
-        }
-      } else if (tickerHasAlreadyBeenAddedToWatchlist === true) {
-         alert("You have already added this ticker to your watchlist!");
-         tickerHasAlreadyBeenAddedToWatchlist = false;
+  componentDidMount () {
+    if (this.props.isLoggedIn) {
+        this.retrieveTickersFromDatabase();
       }
-
-    } else if (this.state.chosenTickers.length === 0) {
-      this.makeAnAPIReguest(inputValue);
     }
 
-    document.querySelector("#search").value = "";
+  componentWillUnmount() {
+    for (let i = 0; i < this.state.intervals; i++) {
+      clearInterval(this.state.intervals[i]);
+    }
+  }
+
+  addInterval = (newElement) => {
+    this.setState(prevState => ({
+      intervals: [...prevState.intervals, newElement]
+    }));
+  }
+
+  removeInterval = (element) => {
+    let newArray = [...this.state.intervals].filter(interval=>interval!==element);
+    this.setState(prevState => ({
+      intervals: [...newArray]
+    }));
   }
 
   updateLoadingStatus = () => {
@@ -65,108 +46,22 @@ class StockMarketPrices extends Component {
     });
   }
 
-  removeFromWatchlist = async (event) => {
-    const symbol = event.target.parentNode.parentNode.firstChild.textContent.trim();
-    for(let i = 0; i < this.state.chosenTickers.length; i++) {
-      if (this.state.chosenTickers[i].symbol === symbol) {
-        let index = this.state.chosenTickers.indexOf(this.state.chosenTickers[i]);
-        this.state.chosenTickers.splice(index, 1)
+    retrieveTickersFromDatabase = async () => {
+      const url = `/profile`;
+      const response = await fetch(url);
+      const json = await response.json();
+
+      if (json.user.watchedTickers.length > 0) {
+        json.user.watchedTickers.forEach(ticker => {
+          this.makeAnAPIReguest(ticker.name);
+        });
+      } else if (json.user.watchedTickers.length === 0) {
         this.setState({
-          chosenTickers: this.state.chosenTickers
-        })
+          loading: false,
+          noTickersInWatchlist: true
+        });
       }
     }
-
-    for (let r = 0; r < this.state.rows.length; r++) {
-     if (this.state.rows[r].props.children[0].props.children[1].trim() === symbol) {
-         let index = this.state.rows.indexOf(this.state.rows[r]);
-         this.state.rows.splice(index, 1);
-         this.setState({
-           rows: this.state.rows
-         });
-     }
-    }
-
-  // delete symbol from a database
-  const url = `/profile/delete/${symbol}`;
-  const response = await fetch(url);
-  const json = await response.json();
-  console.log(json);
-
-}
-
-  generateStockTable = () => {
-      for (let property in this.state.chosenTickers[this.state.chosenTickers.length-1]) {
-        if (this.state.chosenTickers[this.state.chosenTickers.length-1].hasOwnProperty(property)) {
-          this.setState(prevState=>({
-            count: this.state.count + 1
-          }));
-
-          this.state.tableData.push(
-              <td key={this.state.count}> {this.state.chosenTickers[this.state.chosenTickers.length-1][property]} </td>
-          );
-        }
-     }
-
-     this.setState(prevState=>({
-       count: this.state.count + 1
-     }));
-
-        this.state.tableData.push(<td key={this.state.count}> <ModalWindowForStocks symbol={this.state.chosenTickers[this.state.chosenTickers.length-1].symbol} /> </td>);
-         this.setState(prevState=>({
-           count: this.state.count + 1
-         }));
-
-     this.state.tableData.push(<td key={this.state.count}> <button onClick={this.removeFromWatchlist} className="btn btn-warning"> Remove </button> </td>);
-
-     this.state.rows.push(
-       <tr key={this.state.countRow}>
-         {this.state.tableData[(this.state.countRow)*7]}
-         {this.state.tableData[((this.state.countRow)*7)+1]}
-         {this.state.tableData[((this.state.countRow)*7)+2]}
-         {this.state.tableData[((this.state.countRow)*7)+3]}
-         {this.state.tableData[((this.state.countRow)*7)+4]}
-         {this.state.tableData[((this.state.countRow)*7)+5]}
-         {this.state.tableData[((this.state.countRow)*7)+6]}
-       </tr>
-     );
-
-     this.setState({
-       countRow: this.state.countRow + 1
-     });
-
-     this.updateLoadingStatus();
-     window.setTimeout(this.updateStockPrice, 1000);
-  }
-
-  updateStockPrice = async () => {
-    /* const timer = window.setInterval(countItDown, 1000);
-    window.clearInterval(timer);*/
-    const existingRows = document.querySelectorAll("#stocks tbody tr");
-    const lastRow = document.querySelectorAll("#stocks tbody tr")[existingRows.length-1];
-    const columnOfTheSymbol = lastRow.querySelectorAll("td")[0];
-    const columnOfTheLatestPrice = lastRow.querySelectorAll("td")[1];
-    columnOfTheLatestPrice.style.color = "blue";
-    columnOfTheLatestPrice.style.fontWeight = "bold";
-
-    const api_url = `/profile/${columnOfTheSymbol.textContent.trim().toLowerCase()}`;
-    const response = await fetch(api_url);
-    const json2 = await response.json();
-
-    console.log(json2.quote.latestPrice);
-    console.log(json2.quote.latestTime);
-    columnOfTheLatestPrice.textContent = json2.quote.latestPrice;
-
-
-    //latestTime: this.state.json.quote.latestTime;
-
-    /*for(let i = 0; i < this.state.chosenTickers.length; i++) {
-      if (this.state.chosenTickers[i].symbol === columnOfTheSymbol.textContent.trim()) {
-
-      }
-    }*/
-  }
-
 
   makeAnAPIReguest = async (symbol) => {
     const api_url = `/profile/${symbol}`;
@@ -175,33 +70,83 @@ class StockMarketPrices extends Component {
     this.setState({
         json: json
       });
-      console.log(json.quote.latestPrice);
     this.getStockPrices();
   }
 
-
-  retrieveTickersFromDatabase = async () => {
-    const url = `/profile`;
-    const response = await fetch(url);
-    const json = await response.json();
-
-    if (json.user.watchedTickers.length > 0) {
-      json.user.watchedTickers.forEach(ticker => {
-        this.makeAnAPIReguest(ticker.name);
-      });
-    } else if (json.user.watchedTickers.length === 0) {
-      this.setState({
-        loading: false,
-        noTickersInWatchlist: true
-      });
-    }
+  getStockPrices = () => {
+       let formattedSymbol = this.state.json.quote.symbol.trim();
+       this.state.chosenTickers.push({
+            symbol: formattedSymbol,
+            latestPrice: this.state.json.quote.latestPrice,
+            latestTime: this.state.json.quote.latestTime,
+            peRatio: this.state.json.quote.peRatio,
+            previousClose: this.state.json.quote.previousClose,
+            tableData: []
+          });
+        this.generateStockTable();
   }
 
-  componentDidMount () {
-    if (this.props.isLoggedIn) {
-        this.retrieveTickersFromDatabase();
-      }
+  generateStockTable = () => {
+   /*** Columns ***/
+    for (let property in this.state.chosenTickers[this.state.chosenTickers.length-1]) {
+      this.state.chosenTickers[this.state.chosenTickers.length-1].tableData.push(this.state.chosenTickers[this.state.chosenTickers.length-1][property]);
     }
+    /*** Rows ***/
+    const data = {
+      key: this.state.countRow,
+      columns: this.state.chosenTickers[this.state.chosenTickers.length-1].tableData
+    };
+
+    this.state.rows.push(
+      <Stock
+       key={this.state.countRow}
+      data={data}
+      removeFromWatchlist={this.removeFromWatchlist}
+      addInterval={this.addInterval}
+      removeInterval={this.removeInterval}/>
+    );
+
+     this.setState(prevState=>({
+       countRow: this.state.countRow + 1
+     }));
+
+     this.updateLoadingStatus();
+  }
+
+  searchByTicker = (event) => {
+    const inputValue = event.target.parentNode.firstChild.value;
+    let tickerHasAlreadyBeenAddedToWatchlist = false;
+    if (this.state.chosenTickers.length > 0) {
+      this.state.chosenTickers.forEach(ticker => {
+        if (inputValue.toUpperCase() === ticker.symbol) {
+          tickerHasAlreadyBeenAddedToWatchlist = true;
+        }
+      });
+
+    if (tickerHasAlreadyBeenAddedToWatchlist === false) {
+        if (inputValue.length !== 0) {
+          this.makeAnAPIReguest(inputValue);
+        } else {
+          alert("Please type something into the input field!");
+        }
+      } else if (tickerHasAlreadyBeenAddedToWatchlist === true) {
+         alert("You have already added this ticker to your watchlist!");
+         tickerHasAlreadyBeenAddedToWatchlist = false;
+      }
+    } else if (this.state.chosenTickers.length === 0) {
+      this.makeAnAPIReguest(inputValue);
+    }
+    document.querySelector("#search").value = "";
+  }
+
+  removeFromWatchlist = async (event) => {
+    const symbol = event.target.parentNode.parentNode.firstChild.textContent.trim();
+    this.setState({
+      chosenTickers: this.state.chosenTickers.filter(element => element.symbol !== symbol),
+      rows: this.state.rows.filter(element => element.props.data.columns[0].trim() !== symbol)
+    });
+    await fetch(`/profile/${symbol}`, {method: 'delete'}).then(response=>response.json());
+  }
 
   render () {
     return(
@@ -216,7 +161,9 @@ class StockMarketPrices extends Component {
           {
             this.state.loading===true ?
             <p className="mt-3"> Loading... </p>
-          : <table className="mx-auto mt-3" id="stocks">
+          : <div className="mx-auto mt-3">
+          <div className="source"> <a href="https://iexcloud.io">Data provided by IEX Cloud</a></div>
+          <table  id="stocks">
             <thead>
               <tr>
                 <td className="columnTitle"> symbol </td>
@@ -232,6 +179,7 @@ class StockMarketPrices extends Component {
               {this.state.rows}
             </tbody>
           </table>
+          </div>
           }
           {
             this.state.noTickersInWatchlist===true?
@@ -243,8 +191,4 @@ class StockMarketPrices extends Component {
       )
     }
   }
-
-
-
-
 export default StockMarketPrices;

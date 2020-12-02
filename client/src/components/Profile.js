@@ -12,7 +12,10 @@ class Profile extends Component {
     };
   }
 
-  /*Get data from Express server */
+  componentDidMount() {
+    this.getUserData();
+  }
+
   getUserData = () => {
     return axios
      .get('/profile')
@@ -23,7 +26,6 @@ class Profile extends Component {
            isLoggedIn: true
          });
        }
-
        if(response.status === 403) {
          this.props.history.push(`/login`);
        }
@@ -33,18 +35,13 @@ class Profile extends Component {
      });
   }
 
-  componentDidMount() {
-    this.getUserData();
-  }
-
-
   render() {
     return(
       <div>
       {this.state.isLoggedIn ? <div>
         <div className="d-flex justify-content-end mt-3 mr-3">
           <p className="mr-2"> You are signed in as <span id="user">{this.state.user}</span> </p>
-          <NavLink to="/logout"><button className="btn btn-danger">  Log out  </button></NavLink>
+          <NavLink to="/logout"><button className="btn btn-danger" onClick={this.clearIntervals}>  Log out  </button></NavLink>
         </div>
 
         <div className="row mx-auto">
@@ -57,7 +54,5 @@ class Profile extends Component {
     );
   }
 }
-
-
 
 export default withRouter(Profile);
